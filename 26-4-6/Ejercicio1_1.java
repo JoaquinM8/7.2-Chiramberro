@@ -33,7 +33,7 @@ public class Ejercicio1_1 extends JFrame {
 
     public static void main(String[] args) {
         SwingUtilities.invokeLater(() -> {
-            Ejercicio1_2 ejercicio = new Ejercicio1_2();
+            Ejercicio1_1 ejercicio = new Ejercicio1_1();
             ejercicio.setVisible(true);
         });
     }

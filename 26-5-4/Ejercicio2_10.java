@@ -33,7 +33,7 @@ public class Ejercicio2_10 extends JFrame {
                 
                 int capnum = Integer.parseInt(cap);
 
-                if (capnum == num) {
+                if (capnum == num | num/10<1) {
                     resultLabel.setText("Capicua");
                 }else{
                     resultLabel.setText("No!"); 
