@@ -4,7 +4,7 @@ public class Ejercicio2_13 extends JFrame {
 
     public Ejercicio2_13() {
         setTitle("Ejercicio 2.13");
-        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
 
         JTextField horasField = new JTextField(10);
         JTextField minutosField = new JTextField(10);

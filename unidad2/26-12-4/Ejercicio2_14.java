@@ -4,7 +4,7 @@ public class Ejercicio2_14 extends JFrame {
 
     public Ejercicio2_14() {
         setTitle("Ejercicio 2.14");
-        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
 
         JTextField diaField = new JTextField(10);
         JTextField mesField = new JTextField(10);

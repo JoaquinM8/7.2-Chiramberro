@@ -4,7 +4,7 @@ public class Ejercicio2_17 extends JFrame {
 
     public Ejercicio2_17() {
         setTitle("Ejercicio 2.17");
-        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
 
         JTextField kgcomidaField = new JTextField(10);
         JTextField animalesField = new JTextField(10);

@@ -6,7 +6,7 @@ public class Ejercicio1_5 extends JFrame {
 
     public Ejercicio1_5() {
         setTitle("Ejercicio 1.4");
-        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
 
         JTextField inputField = new JTextField(10);
         JTextField inputField2 = new JTextField(10);
