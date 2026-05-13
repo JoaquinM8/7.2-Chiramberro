@@ -1,3 +1,5 @@
+package unidad1.c26_4_27;
+
 import javax.swing.*;
 
 public class EjercicioH extends JFrame {

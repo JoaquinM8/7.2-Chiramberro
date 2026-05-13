@@ -2,6 +2,9 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.*;
 import java.io.File;
+
+import unidad1.c26_4_6.*;
+
 public class TP1 extends JFrame {
     private JPanel mainPanel;
     private CardLayout cardLayout;
@@ -28,10 +31,10 @@ public class TP1 extends JFrame {
         panel.setBorder(BorderFactory.createEmptyBorder(20, 20, 20, 20));
         
         JButton btn1 = new JButton("Program 1 - Description");
-        btn1.addActionListener(e -> cardLayout.show(mainPanel, "program1"));
+        btn1.addActionListener(e -> new Ejercicio1_1().setVisible(true));
         
         JButton btn2 = new JButton("Program 2 - Description");
-        btn2.addActionListener(e -> cardLayout.show(mainPanel, "program2"));
+        btn2.addActionListener(e -> new Ejercicio1_2().setVisible(true));
         
         panel.add(btn1);
         panel.add(btn2);

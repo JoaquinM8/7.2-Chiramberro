@@ -1,35 +1,36 @@
+package unidad1.c26_4_27;
 
 import javax.swing.*;
 
-public class Ejercicio1_4 extends JFrame {
+public class EjercicioF extends JFrame {
 
-    public Ejercicio1_4() {
-        setTitle("Ejercicio 1.4");
+    public EjercicioF() {
+        setTitle("Ejercicio F");
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
         JTextField inputField = new JTextField(10);
         JButton submitButton = new JButton("Enviar");
-        JLabel resultLabel = new JLabel("El siguiente numero es: ");
-        JLabel resultLabel2JLabel = new JLabel("El anterior numero es: ");
+        JLabel resultLabel = new JLabel("Cifras del número: ");
 
         submitButton.addActionListener(e -> {
             try {
-                short num = Short.parseShort(inputField.getText());
-                short sig = (short) (num + 1);
-                short ant = (short) (num - 1);
-                resultLabel.setText("El siguiente numero es:" + sig);
-                resultLabel2JLabel.setText("El numero anterior es:" + ant);
+                int num = Integer.parseInt(inputField.getText());
+
+                int c1 = num/100;
+                int c2 = num/10%10;
+                int c3 = num%10;
+
+                resultLabel.setText("Cifras del número: " + c1 + " / " + c2 + " / " + c3);
             } catch (NumberFormatException ex) {
                 resultLabel.setText("Entrada inválida. Introduce un número válido.");
             }
         });
 
         JPanel panel = new JPanel();
-        panel.add(new JLabel("El numero es: "));
+        panel.add(new JLabel("Ingrese un número de 3 cifras: "));
         panel.add(inputField);
         panel.add(submitButton);
         panel.add(resultLabel);
-        panel.add(resultLabel2JLabel);
 
         add(panel);
         setSize(600, 100);
@@ -38,7 +39,7 @@ public class Ejercicio1_4 extends JFrame {
 
     public static void main(String[] args) {
         SwingUtilities.invokeLater(() -> {
-            Ejercicio1_4 ejercicio = new Ejercicio1_4();
+            EjercicioF ejercicio = new EjercicioF();
             ejercicio.setVisible(true);
         });
     }

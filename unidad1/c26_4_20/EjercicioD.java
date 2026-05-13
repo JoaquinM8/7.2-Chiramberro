@@ -1,27 +1,29 @@
+package unidad1.c26_4_20;
+
 import javax.swing.*;
 
-public class EjercicioA extends JFrame {
+public class EjercicioD extends JFrame {
 
-    public EjercicioA() {
-        setTitle("Ejercicio A");
+    public EjercicioD() {
+        setTitle("Ejercicio D");
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
         JTextField inputField = new JTextField(10);
         JButton submitButton = new JButton("Enviar");
-        JLabel resultLabel = new JLabel("Grados Fahrenheit: ");
+        JLabel resultLabel = new JLabel("Volumen: ");
 
         submitButton.addActionListener(e -> {
             try {
-                int cel = Integer.parseInt(inputField.getText());
-                float far = (float) (cel * 1.8) + 32;
-                resultLabel.setText("Grados Fahrenheit: " + far);
+                int rad = Integer.parseInt(inputField.getText());
+                float vol = (float) ((4.0/3.0) * Math.PI * Math.pow(rad, 3));
+                resultLabel.setText("Volumen: " + vol);
             } catch (NumberFormatException ex) {
                 resultLabel.setText("Entrada inválida. Introduce un número válido.");
             }
         });
 
         JPanel panel = new JPanel();
-        panel.add(new JLabel("Ingresar grados Celsius: "));
+        panel.add(new JLabel("Radio de la esfera (cm): "));
         panel.add(inputField);
         panel.add(submitButton);
         panel.add(resultLabel);
@@ -33,7 +35,7 @@ public class EjercicioA extends JFrame {
 
     public static void main(String[] args) {
         SwingUtilities.invokeLater(() -> {
-            EjercicioA ejercicio = new EjercicioA();
+            EjercicioD ejercicio = new EjercicioD();
             ejercicio.setVisible(true);
         });
     }

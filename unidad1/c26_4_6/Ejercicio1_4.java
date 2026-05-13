@@ -1,32 +1,36 @@
-
+package unidad1.c26_4_6;
 
 import javax.swing.*;
 
-public class Ejercicio1_2 extends JFrame {
+public class Ejercicio1_4 extends JFrame {
 
-    public Ejercicio1_2() {
-        setTitle("Ejercicio 1.2");
+    public Ejercicio1_4() {
+        setTitle("Ejercicio 1.4");
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
         JTextField inputField = new JTextField(10);
         JButton submitButton = new JButton("Enviar");
-        JLabel resultLabel = new JLabel("El próximo año tendrás: ");
+        JLabel resultLabel = new JLabel("El siguiente numero es: ");
+        JLabel resultLabel2JLabel = new JLabel("El anterior numero es: ");
 
         submitButton.addActionListener(e -> {
             try {
-                int num = Integer.parseInt(inputField.getText());
-                num = num + 1;
-                resultLabel.setText("El próximo año tendrás: " + num);
+                short num = Short.parseShort(inputField.getText());
+                short sig = (short) (num + 1);
+                short ant = (short) (num - 1);
+                resultLabel.setText("El siguiente numero es:" + sig);
+                resultLabel2JLabel.setText("El numero anterior es:" + ant);
             } catch (NumberFormatException ex) {
                 resultLabel.setText("Entrada inválida. Introduce un número válido.");
             }
         });
 
         JPanel panel = new JPanel();
-        panel.add(new JLabel("Escriba un número: "));
+        panel.add(new JLabel("El numero es: "));
         panel.add(inputField);
         panel.add(submitButton);
         panel.add(resultLabel);
+        panel.add(resultLabel2JLabel);
 
         add(panel);
         setSize(600, 100);
@@ -35,7 +39,7 @@ public class Ejercicio1_2 extends JFrame {
 
     public static void main(String[] args) {
         SwingUtilities.invokeLater(() -> {
-            Ejercicio1_2 ejercicio = new Ejercicio1_2();
+            Ejercicio1_4 ejercicio = new Ejercicio1_4();
             ejercicio.setVisible(true);
         });
     }

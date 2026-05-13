@@ -1,33 +1,30 @@
+package unidad1.c26_4_20;
 
 import javax.swing.*;
 
-public class Ejercicio1_3 extends JFrame {
+public class EjercicioB extends JFrame {
 
-    public Ejercicio1_3() {
-        setTitle("Ejercicio 1.2");
+    public EjercicioB() {
+        setTitle("Ejercicio B");
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
         JTextField inputField = new JTextField(10);
-        JTextField inputField2 = new JTextField(10);
         JButton submitButton = new JButton("Enviar");
-        JLabel resultLabel = new JLabel("La edad actual es: ");
+        JLabel resultLabel = new JLabel("Velocidad (m/s): ");
 
         submitButton.addActionListener(e -> {
             try {
-                int año = Integer.parseInt(inputField.getText());
-                int nac = Integer.parseInt(inputField2.getText());
-                int edad = año-nac;
-                resultLabel.setText("Tu edad es: " + edad);
+                int kmh = Integer.parseInt(inputField.getText());
+                float ms = (float) (kmh * 0.2777777777777777);
+                resultLabel.setText("Velocidad (m/s): " + ms);
             } catch (NumberFormatException ex) {
                 resultLabel.setText("Entrada inválida. Introduce un número válido.");
             }
         });
 
         JPanel panel = new JPanel();
-        panel.add(new JLabel("Año actual: "));
+        panel.add(new JLabel("Velocidad (Km/h): "));
         panel.add(inputField);
-        panel.add(new JLabel("Año de nacimiento: "));
-        panel.add(inputField2);
         panel.add(submitButton);
         panel.add(resultLabel);
 
@@ -38,7 +35,7 @@ public class Ejercicio1_3 extends JFrame {
 
     public static void main(String[] args) {
         SwingUtilities.invokeLater(() -> {
-            Ejercicio1_3 ejercicio = new Ejercicio1_3();
+            EjercicioB ejercicio = new EjercicioB();
             ejercicio.setVisible(true);
         });
     }
