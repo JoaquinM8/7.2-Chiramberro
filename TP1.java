@@ -33,43 +33,6 @@ public class TP1 extends JFrame { // Clase principal que extiende JFrame para cr
     // Método para cambiar de pantalla
     private void mostrarPantalla(String nombre) {
         navegador.show(contenedor, nombre);
-    
-    // Cambiar el título de la ventana según la pantalla mostrada
-        switch (nombre) {
-            case "MenuPrincipal":
-                setTitle("TP 1 - Menú Principal");
-                break;
-            case "Redondeo":
-                setTitle("TP 1 - Redondeo");
-                break;
-            case "VentasFijas":
-                setTitle("TP 1 - Ventas Fijas");
-                break;
-            case "VentasVariables":
-                setTitle("TP 1 - Ventas Variables");
-                break;
-            case "Circunferencia":
-                setTitle("TP 1 - Circunferencia");
-                break;
-            case "Temperatura":
-                setTitle("TP 1 - Temperatura");
-                break;
-            case "Velocidad":
-                setTitle("TP 1 - Velocidad");
-                break;
-            case "Hipotenusa":
-                setTitle("TP 1 - Hipotenusa");
-                break;
-            case "AreaTriangulo":
-                setTitle("TP 1 - Área de Triángulo");
-                break;
-            case "Descomposicion":
-                setTitle("TP 1 - Descomposición de Número");
-                break;
-            case "NumeroSuerte":
-                setTitle("TP 1 - Número de la Suerte");
-                break;
-    }
     }
 
     // Método para crear el menú principal con botones para cada ejercicio
@@ -98,16 +61,46 @@ public class TP1 extends JFrame { // Clase principal que extiende JFrame para cr
         JButton btnEx10 = new JButton("Número de la suerte");
         btnEx10.setFont(new Font("Arial", Font.BOLD, 14));
 
-        btnEx1.addActionListener(e -> mostrarPantalla("Redondeo"));
-        btnEx2.addActionListener(e -> mostrarPantalla("VentasFijas"));
-        btnEx3.addActionListener(e -> mostrarPantalla("VentasVariables"));
-        btnEx4.addActionListener(e -> mostrarPantalla("Circunferencia"));
-        btnEx5.addActionListener(e -> mostrarPantalla("Temperatura"));
-        btnEx6.addActionListener(e -> mostrarPantalla("Velocidad"));
-        btnEx7.addActionListener(e -> mostrarPantalla("Hipotenusa"));
-        btnEx8.addActionListener(e -> mostrarPantalla("AreaTriangulo"));
-        btnEx9.addActionListener(e -> mostrarPantalla("Descomposicion"));
-        btnEx10.addActionListener(e -> mostrarPantalla("NumeroSuerte"));
+        btnEx1.addActionListener(e -> {
+            setTitle("TP 1 - Redondeo");
+            mostrarPantalla("Redondeo");
+        });
+        btnEx2.addActionListener(e -> {
+            setTitle("TP 1 - Ventas Fijas");
+            mostrarPantalla("VentasFijas");
+        });
+        btnEx3.addActionListener(e -> {
+            setTitle("TP 1 - Ventas Variables");
+            mostrarPantalla("VentasVariables");
+        });
+        btnEx4.addActionListener(e -> {
+            setTitle("TP 1 - Circunferencia");
+            mostrarPantalla("Circunferencia");
+        });
+        btnEx5.addActionListener(e -> {
+            setTitle("TP 1 - Temperatura");
+            mostrarPantalla("Temperatura");
+        });
+        btnEx6.addActionListener(e -> {
+            setTitle("TP 1 - Velocidad");
+            mostrarPantalla("Velocidad");
+        });
+        btnEx7.addActionListener(e -> {
+            setTitle("TP 1 - Hipotenusa");
+            mostrarPantalla("Hipotenusa");
+        });
+        btnEx8.addActionListener(e -> {
+            setTitle("TP 1 - Área de Triángulo");
+            mostrarPantalla("AreaTriangulo");
+        });
+        btnEx9.addActionListener(e -> {
+            setTitle("TP 1 - Descomposición de Número");
+            mostrarPantalla("Descomposicion");
+        });
+        btnEx10.addActionListener(e -> {
+            setTitle("TP 1 - Número de la Suerte");
+            mostrarPantalla("NumeroSuerte");
+        });
 
         JPanel paneltitulo = new JPanel(new FlowLayout(FlowLayout.CENTER));
         paneltitulo.setBorder(
@@ -201,6 +194,7 @@ public class TP1 extends JFrame { // Clase principal que extiende JFrame para cr
             numField.setText("");
             lblResultado.setText("");
 
+            setTitle("TP 1 - Menú Principal");
             mostrarPantalla("MenuPrincipal");
         });
         panel.add(centerPanel, BorderLayout.CENTER);
@@ -325,6 +319,7 @@ public class TP1 extends JFrame { // Clase principal que extiende JFrame para cr
             inputField6.setText("");
             resultLabel.setText("Los beneficios anuales son: ");
 
+            setTitle("TP 1 - Menú Principal");
             mostrarPantalla("MenuPrincipal");
         });
         panel.add(panelVentas, BorderLayout.CENTER);
@@ -475,6 +470,7 @@ public class TP1 extends JFrame { // Clase principal que extiende JFrame para cr
             precioPer3.setText("");
             resultLabel.setText("Los beneficios anuales son: ");
 
+            setTitle("TP 1 - Menú Principal");
             mostrarPantalla("MenuPrincipal");
         });
         panel.add(panelVentas, BorderLayout.CENTER);
@@ -529,6 +525,7 @@ public class TP1 extends JFrame { // Clase principal que extiende JFrame para cr
         btnVolver.addActionListener(e -> {
             rField.setText("");
 
+            setTitle("TP 1 - Menú Principal");
             mostrarPantalla("MenuPrincipal");
         });
         panel.add(centerPanel, BorderLayout.CENTER);
@@ -586,6 +583,7 @@ public class TP1 extends JFrame { // Clase principal que extiende JFrame para cr
             tempField.setText("");
             lblResultado.setText("Temperatura en ºF:");
 
+            setTitle("TP 1 - Menú Principal");
             mostrarPantalla("MenuPrincipal");
         });        
         panel.add(centerPanel, BorderLayout.CENTER);
@@ -643,6 +641,7 @@ public class TP1 extends JFrame { // Clase principal que extiende JFrame para cr
             velField.setText("");
             lblResultado.setText("Velocidad (m/s):");
 
+            setTitle("TP 1 - Menú Principal");
             mostrarPantalla("MenuPrincipal");
         });        
         panel.add(centerPanel, BorderLayout.CENTER);
@@ -716,6 +715,7 @@ public class TP1 extends JFrame { // Clase principal que extiende JFrame para cr
             cat2Field.setText("");
             lblResultado.setText("Hipotenusa:");
 
+            setTitle("TP 1 - Menú Principal");
             mostrarPantalla("MenuPrincipal");
         });        
         panel.add(centerPanel, BorderLayout.CENTER);
@@ -801,6 +801,7 @@ public class TP1 extends JFrame { // Clase principal que extiende JFrame para cr
             lado3Field.setText("");
             lblResultado.setText("Área:");
 
+            setTitle("TP 1 - Menú Principal");
             mostrarPantalla("MenuPrincipal");
         });
         
@@ -889,6 +890,7 @@ public class TP1 extends JFrame { // Clase principal que extiende JFrame para cr
             lblC3.setText("");
             numField.setText("");
 
+            setTitle("TP 1 - Menú Principal");
             mostrarPantalla("MenuPrincipal");
         });
         
@@ -1004,6 +1006,7 @@ public class TP1 extends JFrame { // Clase principal que extiende JFrame para cr
             díaField.setText("");
             lblResultado.setText("Número de la Suerte:"); 
 
+            setTitle("TP 1 - Menú Principal");
             mostrarPantalla("MenuPrincipal");
         });
         
