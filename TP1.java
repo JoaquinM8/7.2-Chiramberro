@@ -154,13 +154,13 @@ public class TP1 extends JFrame { // Clase principal que extiende JFrame para cr
     // Métodos para crear cada pantalla de ejercicio
     private JPanel Redondeo() {
         JPanel panel = new JPanel(new BorderLayout());
-        JTextField txt1 = new JTextField(5);
+        JTextField numField = new JTextField(5);
         JButton btnCalcular = new JButton("Calcular");
         JButton btnVolver = new JButton("Volver");
 
         JLabel lblTitulo = new JLabel("Número:" , SwingConstants.CENTER);
         lblTitulo.setFont(new Font("Arial", Font.BOLD, 20));
-        txt1.setFont(new Font("Arial", Font.PLAIN, 12));
+        numField.setFont(new Font("Arial", Font.PLAIN, 12));
 
         JLabel lblResultado = new JLabel("", SwingConstants.CENTER);
         lblResultado.setFont(new Font("Arial", Font.BOLD, 15));
@@ -177,7 +177,7 @@ public class TP1 extends JFrame { // Clase principal que extiende JFrame para cr
             )
         );
         centerPanel.add(lblTitulo);
-        centerPanel.add(txt1);
+        centerPanel.add(numField);
         centerPanel.add(lblResultado);
         
         JPanel bottomPanel = new JPanel(new FlowLayout(FlowLayout.CENTER, 10, 10));
@@ -187,7 +187,7 @@ public class TP1 extends JFrame { // Clase principal que extiende JFrame para cr
 
         btnCalcular.addActionListener(e -> {
             try {
-                double n1 = Double.parseDouble(txt1.getText());
+                double n1 = Double.parseDouble(numField.getText());
                 Integer suma = (int) Math.round(n1);
                 lblResultado.setText("Redondeo: " + suma);
             } catch (NumberFormatException ex) {
@@ -197,8 +197,12 @@ public class TP1 extends JFrame { // Clase principal que extiende JFrame para cr
             }
         });
 
-        btnVolver.addActionListener(e -> mostrarPantalla("MenuPrincipal"));
+        btnVolver.addActionListener(e -> {
+            numField.setText("");
+            lblResultado.setText("");
 
+            mostrarPantalla("MenuPrincipal");
+        });
         panel.add(centerPanel, BorderLayout.CENTER);
         panel.add(bottomPanel, BorderLayout.SOUTH);
 
@@ -312,8 +316,17 @@ public class TP1 extends JFrame { // Clase principal que extiende JFrame para cr
         bottomPanel.add(resultLabel);
         bottomPanel.add(controlPanel);
 
-        btnVolver.addActionListener(e -> mostrarPantalla("MenuPrincipal"));
+        btnVolver.addActionListener(e -> {
+            inputField.setText("");
+            inputField2.setText("");
+            inputField3.setText("");
+            inputField4.setText("");
+            inputField5.setText("");
+            inputField6.setText("");
+            resultLabel.setText("Los beneficios anuales son: ");
 
+            mostrarPantalla("MenuPrincipal");
+        });
         panel.add(panelVentas, BorderLayout.CENTER);
         panel.add(bottomPanel, BorderLayout.SOUTH);
 
@@ -447,8 +460,23 @@ public class TP1 extends JFrame { // Clase principal que extiende JFrame para cr
             }
         });
 
-        btnVolver.addActionListener(e -> mostrarPantalla("MenuPrincipal"));
+        btnVolver.addActionListener(e -> {
+            inputField.setText("");
+            inputField2.setText("");
+            inputField3.setText("");
+            inputField4.setText("");
+            inputField5.setText("");
+            inputField6.setText("");
+            precioMan1.setText("");
+            precioMan2.setText("");
+            precioMan3.setText("");
+            precioPer1.setText("");
+            precioPer2.setText("");
+            precioPer3.setText("");
+            resultLabel.setText("Los beneficios anuales son: ");
 
+            mostrarPantalla("MenuPrincipal");
+        });
         panel.add(panelVentas, BorderLayout.CENTER);
         panel.add(bottomPanel, BorderLayout.SOUTH);
 
@@ -486,7 +514,7 @@ public class TP1 extends JFrame { // Clase principal que extiende JFrame para cr
                 double r = Double.parseDouble(rField.getText());
                 double circLong = 2 * Math.PI * r;
                 double circArea = Math.PI * r * r;
-                JOptionPane.showMessageDialog(panel, "La circunferencia es: " + String.format("%.2f", circLong) + "\nEl área es: " + String.format("%.2f", circArea), "Resultados", JOptionPane.INFORMATION_MESSAGE);
+                JOptionPane.showMessageDialog(panel, "La circunferencia es: " + String.format("%.2f", circLong) + "\n" + "El área es: " + String.format("%.2f", circArea), "Resultados", JOptionPane.INFORMATION_MESSAGE);
             } catch (NumberFormatException ex) {
                 JOptionPane.showMessageDialog(panel, "Ingrese un número válido para el radio.", "Error", JOptionPane.ERROR_MESSAGE);
             }
@@ -498,8 +526,11 @@ public class TP1 extends JFrame { // Clase principal que extiende JFrame para cr
         bottomPanel.add(btnCalcular);
         bottomPanel.add(btnVolver);
 
-        btnVolver.addActionListener(e -> mostrarPantalla("MenuPrincipal"));
+        btnVolver.addActionListener(e -> {
+            rField.setText("");
 
+            mostrarPantalla("MenuPrincipal");
+        });
         panel.add(centerPanel, BorderLayout.CENTER);
         panel.add(bottomPanel, BorderLayout.SOUTH);
 
@@ -551,8 +582,12 @@ public class TP1 extends JFrame { // Clase principal que extiende JFrame para cr
             }
         });
 
-        btnVolver.addActionListener(e -> mostrarPantalla("MenuPrincipal"));
-        
+        btnVolver.addActionListener(e -> {
+            tempField.setText("");
+            lblResultado.setText("Temperatura en ºF:");
+
+            mostrarPantalla("MenuPrincipal");
+        });        
         panel.add(centerPanel, BorderLayout.CENTER);
         panel.add(bottomPanel, BorderLayout.SOUTH);
 
@@ -604,8 +639,12 @@ public class TP1 extends JFrame { // Clase principal que extiende JFrame para cr
             }
         });
 
-        btnVolver.addActionListener(e -> mostrarPantalla("MenuPrincipal"));
-        
+        btnVolver.addActionListener(e -> {
+            velField.setText("");
+            lblResultado.setText("Velocidad (m/s):");
+
+            mostrarPantalla("MenuPrincipal");
+        });        
         panel.add(centerPanel, BorderLayout.CENTER);
         panel.add(bottomPanel, BorderLayout.SOUTH);
 
@@ -672,8 +711,13 @@ public class TP1 extends JFrame { // Clase principal que extiende JFrame para cr
             }
         });
 
-        btnVolver.addActionListener(e -> mostrarPantalla("MenuPrincipal"));
-        
+        btnVolver.addActionListener(e -> {
+            cat1Field.setText("");
+            cat2Field.setText("");
+            lblResultado.setText("Hipotenusa:");
+
+            mostrarPantalla("MenuPrincipal");
+        });        
         panel.add(centerPanel, BorderLayout.CENTER);
         panel.add(bottomPanel, BorderLayout.SOUTH);
 
@@ -751,7 +795,14 @@ public class TP1 extends JFrame { // Clase principal que extiende JFrame para cr
             }
         });
 
-        btnVolver.addActionListener(e -> mostrarPantalla("MenuPrincipal"));
+        btnVolver.addActionListener(e -> {
+            lado1Field.setText("");
+            lado2Field.setText("");
+            lado3Field.setText("");
+            lblResultado.setText("Área:");
+
+            mostrarPantalla("MenuPrincipal");
+        });
         
         panel.add(centerPanel, BorderLayout.CENTER);
         panel.add(bottomPanel, BorderLayout.SOUTH);
@@ -832,7 +883,14 @@ public class TP1 extends JFrame { // Clase principal que extiende JFrame para cr
             }
         });
 
-        btnVolver.addActionListener(e -> mostrarPantalla("MenuPrincipal"));
+        btnVolver.addActionListener(e -> {
+            lblC1.setText("");
+            lblC2.setText("");
+            lblC3.setText("");
+            numField.setText("");
+
+            mostrarPantalla("MenuPrincipal");
+        });
         
         panel.add(centerPanel, BorderLayout.CENTER);
         panel.add(bottomPanel, BorderLayout.SOUTH);
@@ -940,7 +998,14 @@ public class TP1 extends JFrame { // Clase principal que extiende JFrame para cr
             }
         });
 
-        btnVolver.addActionListener(e -> mostrarPantalla("MenuPrincipal"));
+        btnVolver.addActionListener(e -> {
+            añoField.setText("");
+            mesField.setText("");
+            díaField.setText("");
+            lblResultado.setText("Número de la Suerte:"); 
+
+            mostrarPantalla("MenuPrincipal");
+        });
         
         panel.add(centerPanel, BorderLayout.CENTER);
         panel.add(bottomPanel, BorderLayout.SOUTH);
