@@ -1,0 +1,845 @@
+import javax.swing.*;
+import javax.swing.border.Border;
+import java.awt.*;
+
+public class tp2 extends JFrame {
+
+    public tp2() {
+        setTitle("TP 2");
+        setSize(720,480);
+        setDefaultCloseOperation(EXIT_ON_CLOSE);
+        setLocationRelativeTo(null);
+        add(Menu());
+        setVisible(true);
+    }
+
+    private Border crearBordeDefault(Integer top, Integer left, Integer bottom, Integer right) {
+        return BorderFactory.createCompoundBorder(
+            BorderFactory.createEmptyBorder(top,left,bottom,right),
+            BorderFactory.createCompoundBorder(
+                BorderFactory.createEtchedBorder(), 
+                BorderFactory.createEmptyBorder(top,left,bottom,right)
+                )
+            );
+    }
+
+    private JPanel Menu() {
+
+        JPanel panel = new JPanel(new BorderLayout());
+        panel.setBorder(BorderFactory.createEmptyBorder(10,0,0,0));
+
+        CardLayout navegador = new CardLayout();
+        JPanel contenedor = new JPanel(navegador);
+
+        contenedor.add(inicio(), "Inicio");
+
+        JPanel tituloPanel = new JPanel(new FlowLayout());
+
+        JLabel lblTitulo = new JLabel("Menú Principal");
+        lblTitulo.setFont(new Font("Arial", Font.BOLD, 30));
+
+        tituloPanel.add(lblTitulo, SwingConstants.CENTER);
+
+        
+
+        JPanel buttonPanel = new JPanel(new GridLayout(3,3,10,5));
+        buttonPanel.setBorder(crearBordeDefault(10,10,10,10));
+
+        JButton ex1Button = new JButton("Detector de pares / impares");
+        JButton ex2Button = new JButton("Comparador de números");
+        JButton ex3Button = new JButton("Comparador 2.0");
+        JButton ex4Button = new JButton("Comparador 3.0");
+        JButton ex5Button = new JButton("Casi cero");
+        JButton ex6Button = new JButton("Comparador 4.0");
+        JButton ex7Button = new JButton("Ordenar números");
+        JButton ex8Button = new JButton("Clasificar notas");
+        JButton ex9Button = new JButton("Validar fecha");
+
+        buttonPanel.add(ex1Button);
+        buttonPanel.add(ex2Button);
+        buttonPanel.add(ex3Button);
+        buttonPanel.add(ex4Button);
+        buttonPanel.add(ex5Button);
+        buttonPanel.add(ex6Button);
+        buttonPanel.add(ex7Button);
+        buttonPanel.add(ex8Button);
+        buttonPanel.add(ex9Button);
+
+        ex1Button.addActionListener(e -> {contenedor.add(parImpar(), "ParImpar"); navegador.show(contenedor, "ParImpar");});
+        ex2Button.addActionListener(e -> {contenedor.add(comparadorV1(), "ComparadorV1"); navegador.show(contenedor, "ComparadorV1");});
+        ex3Button.addActionListener(e -> {contenedor.add(comparadorV2(), "ComparadorV2"); navegador.show(contenedor, "ComparadorV2");});
+        ex4Button.addActionListener(e -> {contenedor.add(comparadorV3(), "ComparadorV3"); navegador.show(contenedor, "ComparadorV3");});
+        ex5Button.addActionListener(e -> {contenedor.add(casiCero(), "CasiCero"); navegador.show(contenedor, "CasiCero");});
+        ex6Button.addActionListener(e -> {contenedor.add(comparadorV4(), "ComparadorV4"); navegador.show(contenedor, "ComparadorV4");});
+        ex7Button.addActionListener(e -> {contenedor.add(ordenarNumeros(), "OrdenarNumeros"); navegador.show(contenedor, "OrdenarNumeros");});
+        ex8Button.addActionListener(e -> {contenedor.add(clasificarNotas(), "ClasificarNota"); navegador.show(contenedor, "ClasificarNota");});
+        ex9Button.addActionListener(e -> {contenedor.add(validarFecha(), "ValidarFecha"); navegador.show(contenedor, "ValidarFecha");});
+
+        JPanel topPanel = new JPanel(new BorderLayout());
+
+        topPanel.add(tituloPanel, BorderLayout.NORTH);
+        topPanel.add(buttonPanel, BorderLayout.CENTER);
+
+        panel.add(topPanel, BorderLayout.NORTH);
+        panel.add(contenedor, BorderLayout.CENTER);
+
+        navegador.show(contenedor, "Inicio");
+
+        return panel;
+    }
+
+    private JPanel inicio() {
+        JPanel panel = new JPanel(new BorderLayout());
+        panel.setBackground(Color.gray);
+
+        JLabel lblTitulo = new JLabel("Seleccione un progama", SwingConstants.CENTER);
+        lblTitulo.setFont(new Font("Arial", Font.BOLD, 50));
+
+        panel.add(lblTitulo, BorderLayout.CENTER);
+        return panel;
+    }
+
+    private JPanel parImpar() {
+
+        JPanel panel = new JPanel(new BorderLayout());
+        panel.setBorder(crearBordeDefault(10, 10, 10, 10));
+
+        JLabel tituloLabel = new JLabel("Detector de pares o impares", SwingConstants.CENTER);
+        tituloLabel.setFont(new Font("Arial", Font.PLAIN, 20));
+
+        JPanel inputPanel = new JPanel(new FlowLayout(FlowLayout.CENTER, 10, 10));
+        
+            JTextField numField = new JTextField(5);
+            numField.setFont(new Font("Arial", Font.PLAIN, 20));
+            numField.setHorizontalAlignment(SwingConstants.CENTER);
+            
+            JButton calcButton = new JButton("Calcular");
+
+            inputPanel.add(numField);
+            inputPanel.add(calcButton);
+
+
+        JPanel resultPanel = new JPanel(new BorderLayout());
+
+            JLabel resultLabel = new JLabel("", SwingConstants.CENTER);
+            resultLabel.setFont(new Font("Arial", Font.BOLD, 120));
+
+            resultPanel.add(resultLabel, BorderLayout.CENTER);
+
+        JPanel centerPanel = new JPanel(new GridBagLayout());
+        GridBagConstraints gbc = new GridBagConstraints();
+        gbc.fill = GridBagConstraints.NONE;
+
+        gbc.gridx = 0;
+        gbc.gridy = 0;
+        gbc.weightx = 0.0;
+        gbc.weighty = 1.0;
+        gbc.anchor = GridBagConstraints.WEST;
+        gbc.insets = new Insets(5, 5, 5, 20);
+        centerPanel.add(inputPanel, gbc);
+
+        gbc.gridx = 1;
+        gbc.weightx = 1.0;
+        gbc.anchor = GridBagConstraints.CENTER;
+        gbc.fill = GridBagConstraints.BOTH;
+        gbc.insets = new Insets(5, 5, 5, 5);
+        centerPanel.add(resultPanel, gbc);
+
+
+
+        calcButton.addActionListener(e -> {
+
+            try {
+
+                int num = Integer.parseInt(numField.getText());
+                if (num%2==0) {
+                    resultLabel.setText("PAR");
+                    resultLabel.setForeground(Color.green.darker());
+                } else {
+                    resultLabel.setText("IMPAR");
+                    resultLabel.setForeground(Color.ORANGE);               
+                }
+
+            } catch (NumberFormatException ex) {
+                resultLabel.setText("");
+                JOptionPane.showMessageDialog(panel, "Error garrafal", "Error", JOptionPane.ERROR_MESSAGE);
+            }
+
+        });
+
+        panel.add(tituloLabel, BorderLayout.NORTH);
+        panel.add(centerPanel, BorderLayout.CENTER);
+        return panel;
+    }
+
+    private JPanel comparadorV1() {
+
+        JPanel panel = new JPanel(new BorderLayout());
+        panel.setBorder(crearBordeDefault(10, 10, 10, 10));
+
+        JLabel tituloLabel = new JLabel("Comparador 1.0", SwingConstants.CENTER);
+        tituloLabel.setFont(new Font("Arial", Font.PLAIN, 20));
+
+        JPanel inputPanel = new JPanel(new FlowLayout(FlowLayout.CENTER, 10, 10));
+        
+            JPanel textPanel = new JPanel(new GridLayout(2,1,5,5));
+
+                JTextField numField1 = new JTextField(5);
+                numField1.setFont(new Font("Arial", Font.PLAIN, 20));
+                numField1.setHorizontalAlignment(SwingConstants.CENTER);
+                
+                JTextField numField2 = new JTextField(5);
+                numField2.setFont(new Font("Arial", Font.PLAIN, 20));
+                numField2.setHorizontalAlignment(SwingConstants.CENTER);
+
+                textPanel.add(numField1);
+                textPanel.add(numField2);
+
+            JButton calcButton = new JButton("Calcular");
+
+            inputPanel.add(textPanel);
+            inputPanel.add(calcButton);
+
+
+        JPanel resultPanel = new JPanel(new BorderLayout());
+
+            JLabel resultLabel = new JLabel("", SwingConstants.CENTER);
+            resultLabel.setFont(new Font("Arial", Font.BOLD, 75));
+
+            resultPanel.add(resultLabel, BorderLayout.CENTER);
+            
+        JPanel centerPanel = new JPanel(new GridBagLayout());
+        GridBagConstraints gbc = new GridBagConstraints();
+        gbc.fill = GridBagConstraints.NONE;
+
+        gbc.gridx = 0;
+        gbc.gridy = 0;
+        gbc.weightx = 0.0;
+        gbc.weighty = 1.0;
+        gbc.anchor = GridBagConstraints.WEST;
+        gbc.insets = new Insets(5, 5, 5, 20);
+        centerPanel.add(inputPanel, gbc);
+
+        gbc.gridx = 1;
+        gbc.weightx = 1.0;
+        gbc.anchor = GridBagConstraints.CENTER;
+        gbc.fill = GridBagConstraints.BOTH;
+        gbc.insets = new Insets(5, 5, 5, 5);
+        centerPanel.add(resultPanel, gbc);
+
+
+
+        calcButton.addActionListener(e -> {
+
+            try {
+
+                int num1 = Integer.parseInt(numField1.getText());
+                int num2 = Integer.parseInt(numField2.getText());
+                if (num1 == num2) {
+                    resultLabel.setText("IGUALES");
+                    resultLabel.setForeground(Color.blue.darker());
+                } else {
+                    resultLabel.setText("DISTINTOS");     
+                    resultLabel.setForeground(Color.red.darker());     
+                }
+
+            } catch (NumberFormatException ex) {
+                resultLabel.setText("");
+                JOptionPane.showMessageDialog(panel, "Error garrafal", "Error", JOptionPane.ERROR_MESSAGE);
+            }
+
+        });
+
+        panel.add(tituloLabel, BorderLayout.NORTH);
+        panel.add(centerPanel, BorderLayout.CENTER);
+        return panel;
+    }
+
+    private JPanel comparadorV2() {
+
+        JPanel panel = new JPanel(new BorderLayout());
+        panel.setBorder(crearBordeDefault(10, 10, 10, 10));
+
+        JLabel tituloLabel = new JLabel("Comparador 2.0", SwingConstants.CENTER);
+        tituloLabel.setFont(new Font("Arial", Font.PLAIN, 20));
+
+        JPanel inputPanel = new JPanel(new FlowLayout(FlowLayout.CENTER, 10, 10));
+        
+            JPanel textPanel = new JPanel(new GridLayout(2,1,5,5));
+
+                JTextField numField1 = new JTextField(5);
+                numField1.setFont(new Font("Arial", Font.PLAIN, 20));
+                numField1.setHorizontalAlignment(SwingConstants.CENTER);
+                
+                JTextField numField2 = new JTextField(5);
+                numField2.setFont(new Font("Arial", Font.PLAIN, 20));
+                numField2.setHorizontalAlignment(SwingConstants.CENTER);
+
+                textPanel.add(numField1);
+                textPanel.add(numField2);
+
+            JButton calcButton = new JButton("Calcular");
+
+            inputPanel.add(textPanel);
+            inputPanel.add(calcButton);
+
+
+        JPanel resultPanel = new JPanel(new BorderLayout());
+
+            JLabel resultLabel = new JLabel("", SwingConstants.CENTER);
+            resultLabel.setFont(new Font("Arial", Font.BOLD, 75));
+
+            resultPanel.add(resultLabel, BorderLayout.CENTER);
+            
+        JPanel centerPanel = new JPanel(new GridBagLayout());
+        GridBagConstraints gbc = new GridBagConstraints();
+        gbc.fill = GridBagConstraints.NONE;
+
+        gbc.gridx = 0;
+        gbc.gridy = 0;
+        gbc.weightx = 0.0;
+        gbc.weighty = 1.0;
+        gbc.anchor = GridBagConstraints.WEST;
+        gbc.insets = new Insets(5, 5, 5, 20);
+        centerPanel.add(inputPanel, gbc);
+
+        gbc.gridx = 1;
+        gbc.weightx = 1.0;
+        gbc.anchor = GridBagConstraints.CENTER;
+        gbc.fill = GridBagConstraints.BOTH;
+        gbc.insets = new Insets(5, 5, 5, 5);
+        centerPanel.add(resultPanel, gbc);
+
+
+
+        calcButton.addActionListener(e -> {
+
+            try {
+
+                int num1 = Integer.parseInt(numField1.getText());
+                int num2 = Integer.parseInt(numField2.getText());
+                if (num1 > num2) {
+                    resultLabel.setText(num1 + " > " + num2);
+                } else if (num1 < num2) {
+                    resultLabel.setText(num1 + " < " + num2);
+                } else {
+                    JOptionPane.showMessageDialog(panel, "Función no disponible en esta versión", "Información", JOptionPane.INFORMATION_MESSAGE);
+                }
+
+            } catch (NumberFormatException ex) {
+                resultLabel.setText("");
+                JOptionPane.showMessageDialog(panel, "Error garrafal", "Error", JOptionPane.ERROR_MESSAGE);
+            }
+
+        });
+
+        panel.add(tituloLabel, BorderLayout.NORTH);
+        panel.add(centerPanel, BorderLayout.CENTER);
+        return panel;
+    }
+
+    private JPanel comparadorV3() {
+
+        JPanel panel = new JPanel(new BorderLayout());
+        panel.setBorder(crearBordeDefault(10, 10, 10, 10));
+
+        JLabel tituloLabel = new JLabel("Comparador 2.0", SwingConstants.CENTER);
+        tituloLabel.setFont(new Font("Arial", Font.PLAIN, 20));
+
+        JPanel inputPanel = new JPanel(new FlowLayout(FlowLayout.CENTER, 10, 10));
+        
+            JPanel textPanel = new JPanel(new GridLayout(2,1,5,5));
+
+                JTextField numField1 = new JTextField(5);
+                numField1.setFont(new Font("Arial", Font.PLAIN, 20));
+                numField1.setHorizontalAlignment(SwingConstants.CENTER);
+                
+                JTextField numField2 = new JTextField(5);
+                numField2.setFont(new Font("Arial", Font.PLAIN, 20));
+                numField2.setHorizontalAlignment(SwingConstants.CENTER);
+
+                textPanel.add(numField1);
+                textPanel.add(numField2);
+
+            JButton calcButton = new JButton("Calcular");
+
+            inputPanel.add(textPanel);
+            inputPanel.add(calcButton);
+
+
+        JPanel resultPanel = new JPanel(new BorderLayout());
+
+            JLabel resultLabel = new JLabel("", SwingConstants.CENTER);
+            resultLabel.setFont(new Font("Arial", Font.BOLD, 75));
+
+            resultPanel.add(resultLabel, BorderLayout.CENTER);
+            
+        JPanel centerPanel = new JPanel(new GridBagLayout());
+        GridBagConstraints gbc = new GridBagConstraints();
+        gbc.fill = GridBagConstraints.NONE;
+
+        gbc.gridx = 0;
+        gbc.gridy = 0;
+        gbc.weightx = 0.0;
+        gbc.weighty = 1.0;
+        gbc.anchor = GridBagConstraints.WEST;
+        gbc.insets = new Insets(5, 5, 5, 20);
+        centerPanel.add(inputPanel, gbc);
+
+        gbc.gridx = 1;
+        gbc.weightx = 1.0;
+        gbc.anchor = GridBagConstraints.CENTER;
+        gbc.fill = GridBagConstraints.BOTH;
+        gbc.insets = new Insets(5, 5, 5, 5);
+        centerPanel.add(resultPanel, gbc);
+
+
+
+        calcButton.addActionListener(e -> {
+
+            try {
+
+                int num1 = Integer.parseInt(numField1.getText());
+                int num2 = Integer.parseInt(numField2.getText());
+                if (num1 > num2) {
+                    resultLabel.setText(num1 + " > " + num2);
+                } else if (num1 < num2) {
+                    resultLabel.setText(num1 + " < " + num2);
+                } else {
+                    resultLabel.setText(num1 + " = " + num2);
+                }
+
+            } catch (NumberFormatException ex) {
+                resultLabel.setText("");
+                JOptionPane.showMessageDialog(panel, "Error garrafal", "Error", JOptionPane.ERROR_MESSAGE);
+            }
+
+        });
+
+        panel.add(tituloLabel, BorderLayout.NORTH);
+        panel.add(centerPanel, BorderLayout.CENTER);
+        return panel;
+    }
+
+    private JPanel casiCero() {
+
+        JPanel panel = new JPanel(new BorderLayout());
+        panel.setBorder(crearBordeDefault(10, 10, 10, 10));
+
+        JLabel tituloLabel = new JLabel("Comparador 1.0", SwingConstants.CENTER);
+        tituloLabel.setFont(new Font("Arial", Font.PLAIN, 20));
+
+        JPanel inputPanel = new JPanel(new FlowLayout(FlowLayout.CENTER, 10, 10));
+        
+            JPanel textPanel = new JPanel(new GridLayout(2,1,5,5));
+
+                JTextField numField1 = new JTextField(5);
+                numField1.setFont(new Font("Arial", Font.PLAIN, 20));
+                numField1.setHorizontalAlignment(SwingConstants.CENTER);
+                
+                JTextField numField2 = new JTextField(5);
+                numField2.setFont(new Font("Arial", Font.PLAIN, 20));
+                numField2.setHorizontalAlignment(SwingConstants.CENTER);
+
+                textPanel.add(numField1);
+                textPanel.add(numField2);
+
+            JButton calcButton = new JButton("Calcular");
+
+            inputPanel.add(textPanel);
+            inputPanel.add(calcButton);
+
+
+        JPanel resultPanel = new JPanel(new BorderLayout());
+
+            JLabel resultLabel = new JLabel("", SwingConstants.CENTER);
+            resultLabel.setFont(new Font("Arial", Font.BOLD, 75));
+
+            resultPanel.add(resultLabel, BorderLayout.CENTER);
+            
+        JPanel centerPanel = new JPanel(new GridBagLayout());
+        GridBagConstraints gbc = new GridBagConstraints();
+        gbc.fill = GridBagConstraints.NONE;
+
+        gbc.gridx = 0;
+        gbc.gridy = 0;
+        gbc.weightx = 0.0;
+        gbc.weighty = 1.0;
+        gbc.anchor = GridBagConstraints.WEST;
+        gbc.insets = new Insets(5, 5, 5, 20);
+        centerPanel.add(inputPanel, gbc);
+
+        gbc.gridx = 1;
+        gbc.weightx = 1.0;
+        gbc.anchor = GridBagConstraints.CENTER;
+        gbc.fill = GridBagConstraints.BOTH;
+        gbc.insets = new Insets(5, 5, 5, 5);
+        centerPanel.add(resultPanel, gbc);
+
+
+
+        calcButton.addActionListener(e -> {
+
+            try {
+
+                int num1 = Integer.parseInt(numField1.getText());
+                int num2 = Integer.parseInt(numField2.getText());
+                if (num1 == num2) {
+                    resultLabel.setText("IGUALES");
+                    resultLabel.setForeground(Color.blue.darker());
+                } else {
+                    resultLabel.setText("DISTINTOS");     
+                    resultLabel.setForeground(Color.red.darker());     
+                }
+
+            } catch (NumberFormatException ex) {
+                resultLabel.setText("");
+                JOptionPane.showMessageDialog(panel, "Error garrafal", "Error", JOptionPane.ERROR_MESSAGE);
+            }
+
+        });
+
+        panel.add(tituloLabel, BorderLayout.NORTH);
+        panel.add(centerPanel, BorderLayout.CENTER);
+        return panel;
+    }
+
+    private JPanel comparadorV4() {
+
+        JPanel panel = new JPanel(new BorderLayout());
+        panel.setBorder(crearBordeDefault(10, 10, 10, 10));
+
+        JLabel tituloLabel = new JLabel("Comparador 1.0", SwingConstants.CENTER);
+        tituloLabel.setFont(new Font("Arial", Font.PLAIN, 20));
+
+        JPanel inputPanel = new JPanel(new FlowLayout(FlowLayout.CENTER, 10, 10));
+        
+            JPanel textPanel = new JPanel(new GridLayout(2,1,5,5));
+
+                JTextField numField1 = new JTextField(5);
+                numField1.setFont(new Font("Arial", Font.PLAIN, 20));
+                numField1.setHorizontalAlignment(SwingConstants.CENTER);
+                
+                JTextField numField2 = new JTextField(5);
+                numField2.setFont(new Font("Arial", Font.PLAIN, 20));
+                numField2.setHorizontalAlignment(SwingConstants.CENTER);
+
+                textPanel.add(numField1);
+                textPanel.add(numField2);
+
+            JButton calcButton = new JButton("Calcular");
+
+            inputPanel.add(textPanel);
+            inputPanel.add(calcButton);
+
+
+        JPanel resultPanel = new JPanel(new BorderLayout());
+
+            JLabel resultLabel = new JLabel("", SwingConstants.CENTER);
+            resultLabel.setFont(new Font("Arial", Font.BOLD, 75));
+
+            resultPanel.add(resultLabel, BorderLayout.CENTER);
+            
+        JPanel centerPanel = new JPanel(new GridBagLayout());
+        GridBagConstraints gbc = new GridBagConstraints();
+        gbc.fill = GridBagConstraints.NONE;
+
+        gbc.gridx = 0;
+        gbc.gridy = 0;
+        gbc.weightx = 0.0;
+        gbc.weighty = 1.0;
+        gbc.anchor = GridBagConstraints.WEST;
+        gbc.insets = new Insets(5, 5, 5, 20);
+        centerPanel.add(inputPanel, gbc);
+
+        gbc.gridx = 1;
+        gbc.weightx = 1.0;
+        gbc.anchor = GridBagConstraints.CENTER;
+        gbc.fill = GridBagConstraints.BOTH;
+        gbc.insets = new Insets(5, 5, 5, 5);
+        centerPanel.add(resultPanel, gbc);
+
+
+
+        calcButton.addActionListener(e -> {
+
+            try {
+
+                int num1 = Integer.parseInt(numField1.getText());
+                int num2 = Integer.parseInt(numField2.getText());
+                if (num1 == num2) {
+                    resultLabel.setText("IGUALES");
+                    resultLabel.setForeground(Color.blue.darker());
+                } else {
+                    resultLabel.setText("DISTINTOS");     
+                    resultLabel.setForeground(Color.red.darker());     
+                }
+
+            } catch (NumberFormatException ex) {
+                resultLabel.setText("");
+                JOptionPane.showMessageDialog(panel, "Error garrafal", "Error", JOptionPane.ERROR_MESSAGE);
+            }
+
+        });
+
+        panel.add(tituloLabel, BorderLayout.NORTH);
+        panel.add(centerPanel, BorderLayout.CENTER);
+        return panel;
+    }
+
+    private JPanel ordenarNumeros() {
+
+        JPanel panel = new JPanel(new BorderLayout());
+        panel.setBorder(crearBordeDefault(10, 10, 10, 10));
+
+        JLabel tituloLabel = new JLabel("Comparador 1.0", SwingConstants.CENTER);
+        tituloLabel.setFont(new Font("Arial", Font.PLAIN, 20));
+
+        JPanel inputPanel = new JPanel(new FlowLayout(FlowLayout.CENTER, 10, 10));
+        
+            JPanel textPanel = new JPanel(new GridLayout(2,1,5,5));
+
+                JTextField numField1 = new JTextField(5);
+                numField1.setFont(new Font("Arial", Font.PLAIN, 20));
+                numField1.setHorizontalAlignment(SwingConstants.CENTER);
+                
+                JTextField numField2 = new JTextField(5);
+                numField2.setFont(new Font("Arial", Font.PLAIN, 20));
+                numField2.setHorizontalAlignment(SwingConstants.CENTER);
+
+                textPanel.add(numField1);
+                textPanel.add(numField2);
+
+            JButton calcButton = new JButton("Calcular");
+
+            inputPanel.add(textPanel);
+            inputPanel.add(calcButton);
+
+
+        JPanel resultPanel = new JPanel(new BorderLayout());
+
+            JLabel resultLabel = new JLabel("", SwingConstants.CENTER);
+            resultLabel.setFont(new Font("Arial", Font.BOLD, 75));
+
+            resultPanel.add(resultLabel, BorderLayout.CENTER);
+            
+        JPanel centerPanel = new JPanel(new GridBagLayout());
+        GridBagConstraints gbc = new GridBagConstraints();
+        gbc.fill = GridBagConstraints.NONE;
+
+        gbc.gridx = 0;
+        gbc.gridy = 0;
+        gbc.weightx = 0.0;
+        gbc.weighty = 1.0;
+        gbc.anchor = GridBagConstraints.WEST;
+        gbc.insets = new Insets(5, 5, 5, 20);
+        centerPanel.add(inputPanel, gbc);
+
+        gbc.gridx = 1;
+        gbc.weightx = 1.0;
+        gbc.anchor = GridBagConstraints.CENTER;
+        gbc.fill = GridBagConstraints.BOTH;
+        gbc.insets = new Insets(5, 5, 5, 5);
+        centerPanel.add(resultPanel, gbc);
+
+
+
+        calcButton.addActionListener(e -> {
+
+            try {
+
+                int num1 = Integer.parseInt(numField1.getText());
+                int num2 = Integer.parseInt(numField2.getText());
+                if (num1 == num2) {
+                    resultLabel.setText("IGUALES");
+                    resultLabel.setForeground(Color.blue.darker());
+                } else {
+                    resultLabel.setText("DISTINTOS");     
+                    resultLabel.setForeground(Color.red.darker());     
+                }
+
+            } catch (NumberFormatException ex) {
+                resultLabel.setText("");
+                JOptionPane.showMessageDialog(panel, "Error garrafal", "Error", JOptionPane.ERROR_MESSAGE);
+            }
+
+        });
+
+        panel.add(tituloLabel, BorderLayout.NORTH);
+        panel.add(centerPanel, BorderLayout.CENTER);
+        return panel;
+    }
+
+    private JPanel clasificarNotas() {
+
+        JPanel panel = new JPanel(new BorderLayout());
+        panel.setBorder(crearBordeDefault(10, 10, 10, 10));
+
+        JLabel tituloLabel = new JLabel("Comparador 1.0", SwingConstants.CENTER);
+        tituloLabel.setFont(new Font("Arial", Font.PLAIN, 20));
+
+        JPanel inputPanel = new JPanel(new FlowLayout(FlowLayout.CENTER, 10, 10));
+        
+            JPanel textPanel = new JPanel(new GridLayout(2,1,5,5));
+
+                JTextField numField1 = new JTextField(5);
+                numField1.setFont(new Font("Arial", Font.PLAIN, 20));
+                numField1.setHorizontalAlignment(SwingConstants.CENTER);
+                
+                JTextField numField2 = new JTextField(5);
+                numField2.setFont(new Font("Arial", Font.PLAIN, 20));
+                numField2.setHorizontalAlignment(SwingConstants.CENTER);
+
+                textPanel.add(numField1);
+                textPanel.add(numField2);
+
+            JButton calcButton = new JButton("Calcular");
+
+            inputPanel.add(textPanel);
+            inputPanel.add(calcButton);
+
+
+        JPanel resultPanel = new JPanel(new BorderLayout());
+
+            JLabel resultLabel = new JLabel("", SwingConstants.CENTER);
+            resultLabel.setFont(new Font("Arial", Font.BOLD, 75));
+
+            resultPanel.add(resultLabel, BorderLayout.CENTER);
+            
+        JPanel centerPanel = new JPanel(new GridBagLayout());
+        GridBagConstraints gbc = new GridBagConstraints();
+        gbc.fill = GridBagConstraints.NONE;
+
+        gbc.gridx = 0;
+        gbc.gridy = 0;
+        gbc.weightx = 0.0;
+        gbc.weighty = 1.0;
+        gbc.anchor = GridBagConstraints.WEST;
+        gbc.insets = new Insets(5, 5, 5, 20);
+        centerPanel.add(inputPanel, gbc);
+
+        gbc.gridx = 1;
+        gbc.weightx = 1.0;
+        gbc.anchor = GridBagConstraints.CENTER;
+        gbc.fill = GridBagConstraints.BOTH;
+        gbc.insets = new Insets(5, 5, 5, 5);
+        centerPanel.add(resultPanel, gbc);
+
+
+
+        calcButton.addActionListener(e -> {
+
+            try {
+
+                int num1 = Integer.parseInt(numField1.getText());
+                int num2 = Integer.parseInt(numField2.getText());
+                if (num1 == num2) {
+                    resultLabel.setText("IGUALES");
+                    resultLabel.setForeground(Color.blue.darker());
+                } else {
+                    resultLabel.setText("DISTINTOS");     
+                    resultLabel.setForeground(Color.red.darker());     
+                }
+
+            } catch (NumberFormatException ex) {
+                resultLabel.setText("");
+                JOptionPane.showMessageDialog(panel, "Error garrafal", "Error", JOptionPane.ERROR_MESSAGE);
+            }
+
+        });
+
+        panel.add(tituloLabel, BorderLayout.NORTH);
+        panel.add(centerPanel, BorderLayout.CENTER);
+        return panel;
+    }
+
+    private JPanel validarFecha() {
+
+        JPanel panel = new JPanel(new BorderLayout());
+        panel.setBorder(crearBordeDefault(10, 10, 10, 10));
+
+        JLabel tituloLabel = new JLabel("Comparador 1.0", SwingConstants.CENTER);
+        tituloLabel.setFont(new Font("Arial", Font.PLAIN, 20));
+
+        JPanel inputPanel = new JPanel(new FlowLayout(FlowLayout.CENTER, 10, 10));
+        
+            JPanel textPanel = new JPanel(new GridLayout(2,1,5,5));
+
+                JTextField numField1 = new JTextField(5);
+                numField1.setFont(new Font("Arial", Font.PLAIN, 20));
+                numField1.setHorizontalAlignment(SwingConstants.CENTER);
+                
+                JTextField numField2 = new JTextField(5);
+                numField2.setFont(new Font("Arial", Font.PLAIN, 20));
+                numField2.setHorizontalAlignment(SwingConstants.CENTER);
+
+                textPanel.add(numField1);
+                textPanel.add(numField2);
+
+            JButton calcButton = new JButton("Calcular");
+
+            inputPanel.add(textPanel);
+            inputPanel.add(calcButton);
+
+
+        JPanel resultPanel = new JPanel(new BorderLayout());
+
+            JLabel resultLabel = new JLabel("", SwingConstants.CENTER);
+            resultLabel.setFont(new Font("Arial", Font.BOLD, 75));
+
+            resultPanel.add(resultLabel, BorderLayout.CENTER);
+            
+        JPanel centerPanel = new JPanel(new GridBagLayout());
+        GridBagConstraints gbc = new GridBagConstraints();
+        gbc.fill = GridBagConstraints.NONE;
+
+        gbc.gridx = 0;
+        gbc.gridy = 0;
+        gbc.weightx = 0.0;
+        gbc.weighty = 1.0;
+        gbc.anchor = GridBagConstraints.WEST;
+        gbc.insets = new Insets(5, 5, 5, 20);
+        centerPanel.add(inputPanel, gbc);
+
+        gbc.gridx = 1;
+        gbc.weightx = 1.0;
+        gbc.anchor = GridBagConstraints.CENTER;
+        gbc.fill = GridBagConstraints.BOTH;
+        gbc.insets = new Insets(5, 5, 5, 5);
+        centerPanel.add(resultPanel, gbc);
+
+
+
+        calcButton.addActionListener(e -> {
+
+            try {
+
+                int num1 = Integer.parseInt(numField1.getText());
+                int num2 = Integer.parseInt(numField2.getText());
+                if (num1 == num2) {
+                    resultLabel.setText("IGUALES");
+                    resultLabel.setForeground(Color.blue.darker());
+                } else {
+                    resultLabel.setText("DISTINTOS");     
+                    resultLabel.setForeground(Color.red.darker());     
+                }
+
+            } catch (NumberFormatException ex) {
+                resultLabel.setText("");
+                JOptionPane.showMessageDialog(panel, "Error garrafal", "Error", JOptionPane.ERROR_MESSAGE);
+            }
+
+        });
+
+        panel.add(tituloLabel, BorderLayout.NORTH);
+        panel.add(centerPanel, BorderLayout.CENTER);
+        return panel;
+    }
+
+
+
+    public static void main(String[] args) {
+    SwingUtilities.invokeLater(() -> new tp2());
+    }
+
+}
