@@ -26,22 +26,18 @@ public class TP2 extends JFrame {
     private JPanel Menu() {
 
         JPanel panel = new JPanel(new BorderLayout());
-        panel.setBorder(BorderFactory.createEmptyBorder(10,0,0,0));
 
         CardLayout navegador = new CardLayout();
         JPanel contenedor = new JPanel(navegador);
 
         contenedor.add(inicio(), "Inicio");
 
-        JPanel tituloPanel = new JPanel(new FlowLayout());
-        tituloPanel.setBorder(crearBordeDefault(10,10,10,10));
-        
-        JLabel lblTitulo = new JLabel("Menú Principal");
+        JPanel menuPanel = new JPanel(new BorderLayout());
+        menuPanel.setBorder(crearBordeDefault(10,10,10,10));
+
+        JLabel lblTitulo = new JLabel("PROGRAMAS", SwingConstants.CENTER);
+        lblTitulo.setBorder(BorderFactory.createEmptyBorder(0,10,10,10));
         lblTitulo.setFont(new Font("Arial", Font.BOLD, 30));
-
-        tituloPanel.add(lblTitulo, SwingConstants.CENTER);
-
-        
 
         JPanel buttonPanel = new JPanel(new GridLayout(3,3,10,5));
 
@@ -75,10 +71,12 @@ public class TP2 extends JFrame {
         ex8Button.addActionListener(e -> {contenedor.add(clasificarNotas(), "ClasificarNota"); navegador.show(contenedor, "ClasificarNota");});
         ex9Button.addActionListener(e -> {contenedor.add(validarFecha(), "ValidarFecha"); navegador.show(contenedor, "ValidarFecha");});
 
+        menuPanel.add(lblTitulo, BorderLayout.NORTH);
+        menuPanel.add(buttonPanel, BorderLayout.CENTER);
+
         JPanel topPanel = new JPanel(new BorderLayout());
 
-        topPanel.add(tituloPanel, BorderLayout.NORTH);
-        topPanel.add(buttonPanel, BorderLayout.CENTER);
+        topPanel.add(menuPanel, BorderLayout.NORTH);
 
         panel.add(topPanel, BorderLayout.NORTH);
         panel.add(contenedor, BorderLayout.CENTER);
@@ -90,12 +88,16 @@ public class TP2 extends JFrame {
 
     private JPanel inicio() {
         JPanel panel = new JPanel(new BorderLayout());
-        panel.setBackground(Color.gray);
+        panel.setBorder(crearBordeDefault(10, 10, 10, 10));
 
+        JPanel wordPanel = new JPanel(new BorderLayout());
         JLabel lblTitulo = new JLabel("Seleccione un progama", SwingConstants.CENTER);
         lblTitulo.setFont(new Font("Arial", Font.BOLD, 50));
+        wordPanel.setBackground(Color.gray);
 
-        panel.add(lblTitulo, BorderLayout.CENTER);
+
+        wordPanel.add(lblTitulo, BorderLayout.CENTER);
+        panel.add(wordPanel, BorderLayout.CENTER);
         return panel;
     }
 
@@ -585,7 +587,7 @@ public class TP2 extends JFrame {
         JPanel panel = new JPanel(new BorderLayout());
         panel.setBorder(crearBordeDefault(10, 10, 10, 10));
 
-        JLabel tituloLabel = new JLabel("Comparador 1.0", SwingConstants.CENTER);
+        JLabel tituloLabel = new JLabel("Ordenar Números", SwingConstants.CENTER);
         tituloLabel.setFont(new Font("Arial", Font.PLAIN, 20));
 
         JPanel inputPanel = new JPanel(new FlowLayout(FlowLayout.CENTER, 10, 10));
@@ -697,7 +699,7 @@ public class TP2 extends JFrame {
         JPanel panel = new JPanel(new BorderLayout());
         panel.setBorder(crearBordeDefault(10, 10, 10, 10));
 
-        JLabel tituloLabel = new JLabel("Comparador 1.0", SwingConstants.CENTER);
+        JLabel tituloLabel = new JLabel("Clasificar Nota", SwingConstants.CENTER);
         tituloLabel.setFont(new Font("Arial", Font.PLAIN, 20));
 
         JPanel inputPanel = new JPanel(new FlowLayout(FlowLayout.CENTER, 10, 10));
