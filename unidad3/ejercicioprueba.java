@@ -28,8 +28,8 @@ public class ejercicioprueba extends JFrame {
                         boolean esPositivo = num >= 0;
                        
                         outputArea.append("Número: " + num + "\n");
-                        outputArea.append("¿Es Par?: " + esPar + "\n");
-                        outputArea.append("¿Es Positivo?: " + esPositivo + "\n");
+                        outputArea.append("Par: " + esPar + "\n");
+                        outputArea.append("Positivo: " + esPositivo + "\n");
                         outputArea.append("Cuadrado: " + num * num + "\n\n");
 
                         inputField.setText("");
