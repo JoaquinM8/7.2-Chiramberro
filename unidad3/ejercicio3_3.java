@@ -4,7 +4,7 @@ import javax.swing.*;
 import java.awt.*;
 import java.util.Random;
 
-public class ejercicio3_3 extends JFrame {
+public class ejercicio3_3 extends JPanel {
 
     private Random random = new Random();
 
@@ -13,10 +13,6 @@ public class ejercicio3_3 extends JFrame {
     private JLabel winLabel = new JLabel("", SwingConstants.CENTER);
 
     public ejercicio3_3() {
-        setTitle("Ejercicio 3.3");
-        setSize(480,222);
-        setDefaultCloseOperation(EXIT_ON_CLOSE);
-        setLocationRelativeTo(null);
         
         JLabel titleLabel = new JLabel("Ingresar Número", SwingConstants.CENTER);
         titleLabel.setFont(new Font("Arial", Font.BOLD, 20));
@@ -106,12 +102,20 @@ public class ejercicio3_3 extends JFrame {
             gbc.anchor = GridBagConstraints.EAST;
             gbc.insets = new Insets(5, 5, 5, 5);
             mainPanel.add(rightPanel, gbc);
+        setLayout(new BorderLayout());
+        add(mainPanel, BorderLayout.CENTER);
+    }
 
-        add(mainPanel);
-        setVisible(true);
+    private static void mostrarEnVentana() {
+        JFrame frame = new JFrame("Ejercicio 3.3");
+        frame.setSize(480, 222);
+        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        frame.setLocationRelativeTo(null);
+        frame.add(new ejercicio3_3());
+        frame.setVisible(true);
     }
 
     public static void main(String[] args) {
-    SwingUtilities.invokeLater(() -> new ejercicio3_3());
+        SwingUtilities.invokeLater(ejercicio3_3::mostrarEnVentana);
     }
 }

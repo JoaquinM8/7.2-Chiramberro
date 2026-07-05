@@ -3,13 +3,9 @@ package unidad3;
 import javax.swing.*;
 import java.awt.*;
 
-public class ejercicio3_11 extends JFrame {
+public class ejercicio3_11 extends JPanel {
 
     public ejercicio3_11() {
-        setTitle("Ejercicio 3.11");
-        setSize(720,480);
-        setDefaultCloseOperation(EXIT_ON_CLOSE);
-        setLocationRelativeTo(null);
 
         JPanel mainPanel = new JPanel(new GridLayout(11,11,5,5));
 
@@ -41,12 +37,20 @@ public class ejercicio3_11 extends JFrame {
                 mainPanel.add(label);
             }
         }
+        setLayout(new BorderLayout());
+        add(mainPanel, BorderLayout.CENTER);
+    }
 
-        add(mainPanel);
-        setVisible(true);
+    private static void mostrarEnVentana() {
+        JFrame frame = new JFrame("Ejercicio 3.11");
+        frame.setSize(720, 480);
+        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        frame.setLocationRelativeTo(null);
+        frame.add(new ejercicio3_11());
+        frame.setVisible(true);
     }
 
     public static void main(String[] args) {
-    SwingUtilities.invokeLater(() -> new ejercicio3_11());
+        SwingUtilities.invokeLater(ejercicio3_11::mostrarEnVentana);
     }
 }

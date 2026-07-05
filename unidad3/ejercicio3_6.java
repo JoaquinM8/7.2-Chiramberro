@@ -3,16 +3,12 @@ package unidad3;
 import javax.swing.*;
 import java.awt.*;
 
-public class ejercicio3_6 extends JFrame {
+public class ejercicio3_6 extends JPanel {
 
     int multiplo = 0;
     int i = 0;
 
     public ejercicio3_6() {
-        setTitle("Ejercicio 3.6");
-        setSize(480,222);
-        setDefaultCloseOperation(EXIT_ON_CLOSE);
-        setLocationRelativeTo(null);
         
         JLabel titleLabel = new JLabel("MÚLTIPLOS DE 7", SwingConstants.CENTER);
         titleLabel.setFont(new Font("Arial", Font.BOLD, 20));
@@ -38,12 +34,20 @@ public class ejercicio3_6 extends JFrame {
 
             mainPanel.add(titleLabel, BorderLayout.NORTH);
             mainPanel.add(scrollPane, BorderLayout.CENTER);
+        setLayout(new BorderLayout());
+        add(mainPanel, BorderLayout.CENTER);
+    }
 
-        add(mainPanel);
-        setVisible(true);
+    private static void mostrarEnVentana() {
+        JFrame frame = new JFrame("Ejercicio 3.6");
+        frame.setSize(480, 222);
+        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        frame.setLocationRelativeTo(null);
+        frame.add(new ejercicio3_6());
+        frame.setVisible(true);
     }
 
     public static void main(String[] args) {
-    SwingUtilities.invokeLater(() -> new ejercicio3_6());
+        SwingUtilities.invokeLater(ejercicio3_6::mostrarEnVentana);
     }
 }

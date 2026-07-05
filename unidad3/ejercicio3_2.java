@@ -3,7 +3,7 @@ package unidad3;
 import javax.swing.*;
 import java.awt.*;
 
-public class ejercicio3_2 extends JFrame {
+public class ejercicio3_2 extends JPanel {
 
     private int sumEdad = 0;        
     private int countEdad = 0;  
@@ -16,10 +16,6 @@ public class ejercicio3_2 extends JFrame {
     private JLabel totalMayores = new JLabel("Adultos: ");
 
     public ejercicio3_2() {
-        setTitle("Ejercicio 3.2");
-        setSize(480,222);
-        setDefaultCloseOperation(EXIT_ON_CLOSE);
-        setLocationRelativeTo(null);
         
         JLabel titleLabel = new JLabel("Ingresar Edad", SwingConstants.CENTER);
         titleLabel.setFont(new Font("Arial", Font.BOLD, 20));
@@ -112,14 +108,22 @@ public class ejercicio3_2 extends JFrame {
             gbc.anchor = GridBagConstraints.EAST;
             gbc.insets = new Insets(5, 5, 5, 5);
             mainPanel.add(rightPanel, gbc);
-
-        add(mainPanel);
-        setVisible(true);
+        setLayout(new BorderLayout());
+        add(mainPanel, BorderLayout.CENTER);
     }
 
 
 
+    private static void mostrarEnVentana() {
+        JFrame frame = new JFrame("Ejercicio 3.2");
+        frame.setSize(480, 222);
+        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        frame.setLocationRelativeTo(null);
+        frame.add(new ejercicio3_2());
+        frame.setVisible(true);
+    }
+
     public static void main(String[] args) {
-    SwingUtilities.invokeLater(() -> new ejercicio3_2());
+        SwingUtilities.invokeLater(ejercicio3_2::mostrarEnVentana);
     }
 }

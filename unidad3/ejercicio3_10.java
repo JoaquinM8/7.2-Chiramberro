@@ -3,13 +3,9 @@ package unidad3;
 import javax.swing.*;
 import java.awt.*;
 
-public class ejercicio3_10 extends JFrame {
+public class ejercicio3_10 extends JPanel {
 
     public ejercicio3_10() {
-        setTitle("Ejercicio 3.10");
-        setSize(480,222);
-        setDefaultCloseOperation(EXIT_ON_CLOSE);
-        setLocationRelativeTo(null);
 
         JLabel titleLabel = new JLabel("Ingresar Número", SwingConstants.CENTER);
         titleLabel.setFont(new Font("Arial", Font.BOLD, 20));
@@ -78,12 +74,20 @@ public class ejercicio3_10 extends JFrame {
             gbc.anchor = GridBagConstraints.EAST;
             gbc.insets = new Insets(5, 5, 5, 5);
             mainPanel.add(rightPanel, gbc);
+        setLayout(new BorderLayout());
+        add(mainPanel, BorderLayout.CENTER);
+    }
 
-        add(mainPanel);
-        setVisible(true);
+    private static void mostrarEnVentana() {
+        JFrame frame = new JFrame("Ejercicio 3.10");
+        frame.setSize(480, 222);
+        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        frame.setLocationRelativeTo(null);
+        frame.add(new ejercicio3_10());
+        frame.setVisible(true);
     }
 
     public static void main(String[] args) {
-    SwingUtilities.invokeLater(() -> new ejercicio3_10());
+        SwingUtilities.invokeLater(ejercicio3_10::mostrarEnVentana);
     }
 }

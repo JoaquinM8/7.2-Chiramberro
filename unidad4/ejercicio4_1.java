@@ -1,12 +1,12 @@
-package unidad3;
+package unidad4;
 
 import javax.swing.*;
 import java.awt.*;
 
-public class ejercicio3_4 extends JPanel {
+public class ejercicio4_1 extends JPanel {
 
 
-    public ejercicio3_4() {
+    public ejercicio4_1() {
 
         JLabel titleLabel = new JLabel("Ingresar Número", SwingConstants.CENTER);
         titleLabel.setFont(new Font("Arial", Font.BOLD, 20));
@@ -23,17 +23,24 @@ public class ejercicio3_4 extends JPanel {
         submitButton.addActionListener(e -> {
             try {
                 int num = Integer.parseInt(inputField.getText());
-                int i;
-                if (num < 1) {
-                    JOptionPane.showMessageDialog(resultArea, "Error mortal", "Error", JOptionPane.ERROR_MESSAGE);
-                } else {
-                    for (i=1 ; i <= num ; i++) {
-                        resultArea.append(""+i+"\n");
-                    }
+                int i = 0;
+
+                if (num == 0) {
                     inputField.setEditable(false);
-                    submitButton.setEnabled(false);
+                } else {
+                    i = 1;
                 }
 
+                while (i == 1) {
+                    boolean par = num % 2 == 0;
+                    boolean pos = num > 0;
+                    resultArea.append("Número: " + num + "\n");
+                    resultArea.append("Par: " + par + "\n");
+                    resultArea.append("Positivo: " + pos + "\n");
+                    resultArea.append("Cuadrado: " + num*num + "\n");
+                    resultArea.append("" + "\n");
+                    ++i;
+                }
             } catch (NumberFormatException ex) {
                 JOptionPane.showMessageDialog(resultArea, "Error mortal", "Error", JOptionPane.ERROR_MESSAGE);
             }
@@ -77,16 +84,18 @@ public class ejercicio3_4 extends JPanel {
         add(mainPanel, BorderLayout.CENTER);
     }
 
+
+
     private static void mostrarEnVentana() {
-        JFrame frame = new JFrame("Ejercicio 3.4");
+        JFrame frame = new JFrame("Ejercicio 3.1");
         frame.setSize(480, 222);
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         frame.setLocationRelativeTo(null);
-        frame.add(new ejercicio3_4());
+        frame.add(new ejercicio4_1());
         frame.setVisible(true);
     }
 
     public static void main(String[] args) {
-        SwingUtilities.invokeLater(ejercicio3_4::mostrarEnVentana);
+        SwingUtilities.invokeLater(ejercicio4_1::mostrarEnVentana);
     }
 }

@@ -3,17 +3,13 @@ package unidad3;
 import javax.swing.*;
 import java.awt.*;
 
-public class ejercicio3_7 extends JFrame {
+public class ejercicio3_7 extends JPanel {
 
     int producto = 1;
     int num = 1;
     int i = 0;
 
     public ejercicio3_7() {
-        setTitle("Ejercicio 3.7");
-        setSize(480,222);
-        setDefaultCloseOperation(EXIT_ON_CLOSE);
-        setLocationRelativeTo(null);
         
         JLabel titleLabel = new JLabel("PRODUCTO DE NÚMEROS IMPARES", SwingConstants.CENTER);
         titleLabel.setFont(new Font("Arial", Font.BOLD, 20));
@@ -41,12 +37,20 @@ public class ejercicio3_7 extends JFrame {
 
             mainPanel.add(titleLabel, BorderLayout.NORTH);
             mainPanel.add(resultPanel, BorderLayout.CENTER);
+        setLayout(new BorderLayout());
+        add(mainPanel, BorderLayout.CENTER);
+    }
 
-        add(mainPanel);
-        setVisible(true);
+    private static void mostrarEnVentana() {
+        JFrame frame = new JFrame("Ejercicio 3.7");
+        frame.setSize(480, 222);
+        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        frame.setLocationRelativeTo(null);
+        frame.add(new ejercicio3_7());
+        frame.setVisible(true);
     }
 
     public static void main(String[] args) {
-    SwingUtilities.invokeLater(() -> new ejercicio3_7());
+        SwingUtilities.invokeLater(ejercicio3_7::mostrarEnVentana);
     }
 }
