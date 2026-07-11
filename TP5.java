@@ -94,7 +94,7 @@ public class TP5 extends JFrame {
             case 7:
                 return new ejercicio5_7();
             case 8:
-                return new ejercicio5_8();
+                return noDisponible("Ejercicio 5.8");
             case 9:
                 return new ejercicio5_9();
             case 10:
@@ -104,7 +104,7 @@ public class TP5 extends JFrame {
             case 12:
                 return new ejercicio5_12();
             case 13:
-                return new ejercicio5_13();
+                return noDisponible("Ejercicio 5.13");
             case 14:
                 return new ejercicio5_14();
             case 15:
@@ -112,6 +112,17 @@ public class TP5 extends JFrame {
             default:
                 return inicio();
         }
+    }
+
+    private JPanel noDisponible(String nombre) {
+        JPanel panel = new JPanel(new BorderLayout());
+        panel.setBorder(crearBordeDefault(10, 10, 10, 10));
+
+        JLabel lblTitulo = new JLabel(nombre + " no existe en la guia", SwingConstants.CENTER);
+        lblTitulo.setFont(new Font("Arial", Font.BOLD, 35));
+
+        panel.add(lblTitulo, BorderLayout.CENTER);
+        return panel;
     }
 
     private JPanel inicio() {
