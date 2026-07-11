@@ -118,7 +118,7 @@ public class TP5 extends JFrame {
         JPanel panel = new JPanel(new BorderLayout());
         panel.setBorder(crearBordeDefault(10, 10, 10, 10));
 
-        JLabel lblTitulo = new JLabel(nombre + " no existe en la guia", SwingConstants.CENTER);
+        JLabel lblTitulo = new JLabel("Ejercicio no disponible", SwingConstants.CENTER);
         lblTitulo.setFont(new Font("Arial", Font.BOLD, 35));
 
         panel.add(lblTitulo, BorderLayout.CENTER);
