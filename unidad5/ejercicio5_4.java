@@ -8,7 +8,7 @@ import java.awt.*;
 
 public class ejercicio5_4 extends JPanel {
 
-    int numeros[] = {8, 12, 72, 5, 21, 10};
+    int numeros[] = {8, 12, 72};
     int cantidad = numeros.length;
 
     public ejercicio5_4() {

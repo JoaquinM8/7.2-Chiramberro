@@ -61,10 +61,10 @@ public class ejercicio5_5 extends JPanel {
                             }
 
                             if (digito < secreto[i]) {
-                                resultArea.append("Posicion " + (i + 1) + ": menor\n");
+                                resultArea.append("Posicion " + (i + 1) + ": mayor\n");
                                 gano = false;
                             } else if (digito > secreto[i]) {
-                                resultArea.append("Posicion " + (i + 1) + ": mayor\n");
+                                resultArea.append("Posicion " + (i + 1) + ": menor\n");
                                 gano = false;
                             } else {
                                 resultArea.append("Posicion " + (i + 1) + ": igual\n");

@@ -13,6 +13,8 @@ public class ejercicio5_3 extends JPanel {
     int cPos = 0;
     int cNeg = 0;
     int cCeros = 0;
+    int sumaPos = 0;
+    int sumaNeg = 0;
     int numeros[];
     boolean isCantidad = false;
 
@@ -61,14 +63,24 @@ public class ejercicio5_3 extends JPanel {
                             for (int j = 0;j < len; j++) {
                                 if (numeros[j] > 0) {
                                     cPos++;
+                                    sumaPos += numeros[j];
                                 } else if (numeros[j] < 0) {
                                     cNeg++;
+                                    sumaNeg += numeros[j];
                                 } else {
                                     cCeros++;
                                 }
                             }
-                            resultArea.append("Positivos: " + cPos + "\n");
-                            resultArea.append("Negativos: " + cNeg + "\n");
+                            if (cPos > 0) {
+                                resultArea.append("Media de positivos: " + ((double) sumaPos / cPos) + "\n");
+                            } else {
+                                resultArea.append("Media de positivos: No hay positivos\n");
+                            }
+                            if (cNeg > 0) {
+                                resultArea.append("Media de negativos: " + ((double) sumaNeg / cNeg) + "\n");
+                            } else {
+                                resultArea.append("Media de negativos: No hay negativos\n");
+                            }
                             resultArea.append("Ceros: " + cCeros + "\n");
                         }
                     }

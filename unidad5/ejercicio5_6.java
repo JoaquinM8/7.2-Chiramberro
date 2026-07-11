@@ -9,6 +9,7 @@ import java.awt.*;
 public class ejercicio5_6 extends JPanel {
 
     int puntos[] = new int[8];
+    int participantes[] = new int[8];
     int cantidad = 0;
 
     public ejercicio5_6() {
@@ -32,6 +33,7 @@ public class ejercicio5_6 extends JPanel {
 
                 if (cantidad < 5) {
                     puntos[cantidad] = punto;
+                    participantes[cantidad] = cantidad + 1;
                     cantidad++;
 
                     if (cantidad == 5) {
@@ -47,6 +49,7 @@ public class ejercicio5_6 extends JPanel {
                         submitButton.setEnabled(false);
                     } else {
                         puntos[cantidad] = punto;
+                        participantes[cantidad] = cantidad + 1;
                         cantidad++;
                         mostrarOrdenados(resultArea);
 
@@ -70,25 +73,35 @@ public class ejercicio5_6 extends JPanel {
 
     public void mostrarOrdenados(JTextArea resultArea) {
         int copia[] = new int[cantidad];
+        int copiaParticipantes[] = new int[cantidad];
 
         for (int i = 0; i < cantidad; i++) {
             copia[i] = puntos[i];
+            copiaParticipantes[i] = participantes[i];
         }
 
-        ordenar(copia);
+        ordenar(copia, copiaParticipantes);
         resultArea.setText("Puntuaciones ordenadas:\n");
         for (int i = 0; i < copia.length; i++) {
-            resultArea.append(copia[i] + "\n");
+            if (copiaParticipantes[i] <= 5) {
+                resultArea.append("Programador " + copiaParticipantes[i] + ": " + copia[i] + "\n");
+            } else {
+                resultArea.append("Exhibicion " + (copiaParticipantes[i] - 5) + ": " + copia[i] + "\n");
+            }
         }
     }
 
-    public static void ordenar(int tabla[]) {
+    public static void ordenar(int tabla[], int participantes[]) {
         for (int i = 0; i < tabla.length - 1; i++) {
             for (int j = 0; j < tabla.length - 1 - i; j++) {
                 if (tabla[j] > tabla[j + 1]) {
                     int aux = tabla[j];
                     tabla[j] = tabla[j + 1];
                     tabla[j + 1] = aux;
+
+                    aux = participantes[j];
+                    participantes[j] = participantes[j + 1];
+                    participantes[j + 1] = aux;
                 }
             }
         }
