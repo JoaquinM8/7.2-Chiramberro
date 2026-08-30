@@ -28,7 +28,7 @@ public class e7_6s extends JPanel {
         JButton crear = new JButton("Crear texto");
         JButton principio = new JButton("Agregar al principio");
         JButton finalTexto = new JButton("Agregar al final");
-        resultado = new JTextArea(8, 35);
+        resultado = new JTextArea(10, 45);
         resultado.setEditable(false);
 
         crear.addActionListener(e -> {

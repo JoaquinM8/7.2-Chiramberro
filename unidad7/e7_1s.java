@@ -201,7 +201,7 @@ public class e7_1s extends JFrame {
         // -------------------------------------------------
 
         // Creamos el área de texto.
-        txtResultado = new JTextArea();
+        txtResultado = new JTextArea(10, 45);
 
         // Permitimos que el usuario no pueda
         // modificar el resultado directamente.

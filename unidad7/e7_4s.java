@@ -7,7 +7,7 @@ public class e7_4s extends JPanel {
     public e7_4s() {
         setLayout(new FlowLayout());
         JTextField nombre = new JTextField(15);
-        JTextArea resultado = new JTextArea(7, 35);
+        JTextArea resultado = new JTextArea(10, 45);
         resultado.setEditable(false);
         JButton probar = new JButton("Modificar nombre publico");
         probar.addActionListener(e -> {

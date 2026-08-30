@@ -14,7 +14,7 @@ public class TP7 extends JFrame {
 
     private JPanel menu() {
         JPanel panel = new JPanel(new BorderLayout());
-        JPanel botones = new JPanel(new GridLayout(2, 3, 10, 10));
+        JPanel botones = new JPanel(new GridLayout(0, 3, 10, 10));
         JLabel titulo = new JLabel("TP 7 - PROGRAMAS", SwingConstants.CENTER);
         titulo.setFont(new Font("Arial", Font.BOLD, 30));
         agregarBoton(botones, "CuentaCorriente", () -> new e7_1s().setVisible(true));
@@ -23,6 +23,14 @@ public class TP7 extends JFrame {
         agregarBoton(botones, "Sintonizador", e7_8s::mostrarEnVentana);
         agregarBoton(botones, "Bombilla", e7_9s::mostrarEnVentana);
         agregarBoton(botones, "Tren", e7_10s::mostrarEnVentana);
+        agregarBoton(botones, "Hora", e7_11s::mostrarEnVentana);
+        agregarBoton(botones, "Lista", e7_12s::mostrarEnVentana);
+        agregarBoton(botones, "PilaTabla", e7_13s::mostrarEnVentana);
+        agregarBoton(botones, "PilaLista", e7_14s::mostrarEnVentana);
+        agregarBoton(botones, "ColaTabla", e7_15s::mostrarEnVentana);
+        agregarBoton(botones, "ColaLista", e7_16s::mostrarEnVentana);
+        agregarBoton(botones, "Conjunto", e7_17s::mostrarEnVentana);
+        agregarBoton(botones, "Operaciones Conjunto", e7_18s::mostrarEnVentana);
         JPanel menuSuperior = new JPanel(new BorderLayout());
         menuSuperior.add(titulo, BorderLayout.NORTH);
         menuSuperior.add(botones, BorderLayout.CENTER);

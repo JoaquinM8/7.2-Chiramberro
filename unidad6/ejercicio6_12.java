@@ -27,6 +27,10 @@ public class ejercicio6_12 extends JPanel {
         submitButton.addActionListener(e -> {
             String palabra1 = palabra1Field.getText().toLowerCase();
             String palabra2 = palabra2Field.getText().toLowerCase();
+            if (palabra1.trim().isEmpty() || palabra2.trim().isEmpty()) {
+                JOptionPane.showMessageDialog(this, "Debes ingresar las dos palabras.", "Dato inválido", JOptionPane.WARNING_MESSAGE);
+                return;
+            }
             boolean anagrama = palabra1.length() == palabra2.length();
 
             for (int i = 0; i < palabra1.length() && anagrama; i++) {

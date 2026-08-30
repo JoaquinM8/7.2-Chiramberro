@@ -4,96 +4,42 @@ import javax.swing.*;
 import java.awt.*;
 import java.util.Random;
 
-// 6.14. Implementar el juego del anagrama, que consiste en que un jugador escribe una palabra o frase, y la aplicación muestra un anagrama del texto introducido generado al azar. A continuación otro jugador tiene que acertar cuál es el texto original. La aplicación no debe permitir que el texto introducido por el jugador 1 sea la cadena vacía.
 public class ejercicio6_14 extends JPanel {
-
-    String original = "";
-    Random random = new Random();
-
-    public ejercicio6_14() {
-
-        JLabel titleLabel = new JLabel("Juego del anagrama", SwingConstants.CENTER);
-        titleLabel.setFont(new Font("Arial", Font.BOLD, 20));
-
-        JTextField inputField = new JTextField(18);
-        inputField.setFont(new Font("Arial", Font.PLAIN, 15));
-        inputField.setHorizontalAlignment(SwingConstants.CENTER);
-
-        JButton submitButton = new JButton("Ingresar");
-
-        JTextArea resultArea = new JTextArea(10, 20);
-        resultArea.setEditable(false);
-        resultArea.setText("Jugador 1, ingrese una palabra o frase.\n");
-
-        submitButton.addActionListener(e -> {
-            if (original.equals("")) {
-                original = inputField.getText();
-
-                if (original.equals("")) {
-                    resultArea.setText("No puede ingresar una cadena vacia.\n");
-                } else {
-                    String anagrama = mezclar(original);
-                    resultArea.setText("Jugador 2, adivine el texto.\nAnagrama: " + anagrama + "\n");
-                }
-            } else if (inputField.getText().equals(original)) {
-                resultArea.append("Adivinaste el texto.");
-                inputField.setEditable(false);
-                submitButton.setEnabled(false);
-            } else {
-                resultArea.append("No es el texto original.\n");
-            }
-
-            inputField.setText("");
-        });
-
-        JPanel mainPanel = new JPanel(new GridBagLayout());
-        GridBagConstraints gbc = new GridBagConstraints();
-        JPanel leftPanel = new JPanel(new BorderLayout());
-        JPanel inputPanel = new JPanel(new FlowLayout(FlowLayout.CENTER, 5, 5));
-        inputPanel.add(inputField);
-        inputPanel.add(submitButton);
-        leftPanel.add(titleLabel, BorderLayout.NORTH);
-        leftPanel.add(inputPanel, BorderLayout.CENTER);
-
-        JPanel rightPanel = new JPanel();
-        rightPanel.add(new JScrollPane(resultArea));
-
-        gbc.gridx = 0;
-        gbc.gridy = 0;
-        gbc.fill = GridBagConstraints.BOTH;
-        gbc.insets = new Insets(5, 5, 5, 20);
-        mainPanel.add(leftPanel, gbc);
-        gbc.gridx = 1;
-        gbc.insets = new Insets(5, 5, 5, 5);
-        mainPanel.add(rightPanel, gbc);
-
-        setLayout(new BorderLayout());
-        add(mainPanel, BorderLayout.CENTER);
+    private static final int MAX_INTENTOS = 3;
+    private final Random random = new Random();
+    private final Jugador jugador;
+    private String original = "";
+    private int intentos;
+    private final JTextField entrada = new JTextField(20);
+    private final JTextArea resultado = new JTextArea(9, 28);
+    private final JButton enviar = new JButton("Comenzar partida");
+    private final JButton nuevaPartida = new JButton("Nueva partida");
+    public ejercicio6_14() { this(null); }
+    public ejercicio6_14(Jugador jugador) {
+        this.jugador = jugador; setLayout(new BorderLayout(8, 8));
+        JLabel titulo = new JLabel("Desafío final del anagrama", SwingConstants.CENTER); titulo.setFont(new Font("Arial", Font.BOLD, 20)); add(titulo, BorderLayout.NORTH);
+        JPanel controles = new JPanel(new FlowLayout()); controles.add(new JLabel("Texto / respuesta:")); controles.add(entrada); controles.add(enviar); controles.add(nuevaPartida);
+        nuevaPartida.setEnabled(false); resultado.setEditable(false); resultado.setText("Jugador 1: ingresá una palabra o frase para comenzar.\n");
+        enviar.addActionListener(e -> procesarEntrada()); nuevaPartida.addActionListener(e -> reiniciar()); add(controles, BorderLayout.CENTER); add(new JScrollPane(resultado), BorderLayout.SOUTH);
     }
-
-    public String mezclar(String texto) {
-        char letras[] = texto.toCharArray();
-
-        for (int i = 0; i < letras.length; i++) {
-            int pos = random.nextInt(letras.length);
-            char aux = letras[i];
-            letras[i] = letras[pos];
-            letras[pos] = aux;
-        }
-
-        return new String(letras);
+    private void procesarEntrada() {
+        String texto = entrada.getText();
+        if (texto.trim().isEmpty()) { JOptionPane.showMessageDialog(this, "Debes ingresar una palabra o frase.", "Dato inválido", JOptionPane.WARNING_MESSAGE); return; }
+        entrada.setText("");
+        if (original.isEmpty()) { original = texto; intentos = MAX_INTENTOS; resultado.setText("Jugador 2: adiviná el texto original.\nAnagrama: " + crearAnagrama(original) + "\nIntentos restantes: " + intentos + "\n"); enviar.setText("Probar respuesta"); return; }
+        if (texto.equals(original)) { resultado.append("¡Correcto! Descubriste el texto original. +100 puntos.\n"); cambiarPuntaje(100); terminar(); return; }
+        intentos--; cambiarPuntaje(-10);
+        if (intentos == 0) { resultado.append("Respuesta incorrecta. No quedan intentos. El texto era: " + original + ".\n"); terminar(); }
+        else resultado.append("Respuesta incorrecta. -10 puntos. Intentos restantes: " + intentos + ".\n");
     }
-
-    private static void mostrarEnVentana() {
-        JFrame frame = new JFrame("Ejercicio 6.14");
-        frame.setSize(560, 300);
-        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        frame.setLocationRelativeTo(null);
-        frame.add(new ejercicio6_14());
-        frame.setVisible(true);
+    private void terminar() { entrada.setEnabled(false); enviar.setEnabled(false); nuevaPartida.setEnabled(true); }
+    private void reiniciar() { original = ""; intentos = 0; entrada.setText(""); entrada.setEnabled(true); enviar.setEnabled(true); enviar.setText("Comenzar partida"); nuevaPartida.setEnabled(false); resultado.setText("Jugador 1: ingresá una palabra o frase para comenzar.\n"); }
+    private void cambiarPuntaje(int puntos) { if (jugador != null) { if (puntos > 0) jugador.sumarPuntos(puntos); else jugador.restarPuntos(-puntos); } }
+    private String crearAnagrama(String texto) {
+        String anagrama = mezclar(texto);
+        for (int i = 0; i < 10 && anagrama.equals(texto); i++) anagrama = mezclar(texto);
+        return anagrama;
     }
-
-    public static void main(String[] args) {
-        SwingUtilities.invokeLater(ejercicio6_14::mostrarEnVentana);
-    }
+    public String mezclar(String texto) { char[] letras = texto.toCharArray(); for (int i = letras.length - 1; i > 0; i--) { int posicion = random.nextInt(i + 1); char auxiliar = letras[i]; letras[i] = letras[posicion]; letras[posicion] = auxiliar; } return new String(letras); }
+    public static void main(String[] args) { SwingUtilities.invokeLater(() -> { JFrame ventana = new JFrame("Ejercicio 6.14"); ventana.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE); ventana.add(new ejercicio6_14()); ventana.pack(); ventana.setLocationRelativeTo(null); ventana.setVisible(true); }); }
 }

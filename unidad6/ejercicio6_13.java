@@ -22,6 +22,10 @@ public class ejercicio6_13 extends JPanel {
 
         submitButton.addActionListener(e -> {
             String frase = inputField.getText().toLowerCase();
+            if (frase.trim().isEmpty()) {
+                JOptionPane.showMessageDialog(this, "Debes ingresar una frase.", "Dato inválido", JOptionPane.WARNING_MESSAGE);
+                return;
+            }
             resultArea.setText("");
 
             for (char letra = 'a'; letra <= 'z'; letra++) {

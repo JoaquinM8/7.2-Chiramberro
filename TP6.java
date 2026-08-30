@@ -6,16 +6,71 @@ import unidad6.*;
 
 public class TP6 extends JFrame {
 
-    private CardLayout navegador = new CardLayout();
-    private JPanel contenedor = new JPanel(navegador);
+    private final CardLayout navegador = new CardLayout();
+    private final JPanel contenedor = new JPanel(navegador);
+    private final Jugador jugador;
+    private final JLabel datosJugador = new JLabel();
 
     public TP6() {
-        setTitle("TP 6");
-        setSize(720, 480);
+        jugador = new Jugador(solicitarNombre());
+        jugador.agregarObservador(this::actualizarDatosJugador);
+        setTitle("JAVA STRING GAMES");
+        setSize(820, 560);
         setDefaultCloseOperation(EXIT_ON_CLOSE);
         setLocationRelativeTo(null);
+        setJMenuBar(crearBarraMenu());
         add(menu());
+        actualizarDatosJugador();
         setVisible(true);
+    }
+
+    private String solicitarNombre() {
+        String nombre;
+        do {
+            nombre = JOptionPane.showInputDialog(this, "Ingresa tu nombre:", "JAVA STRING GAMES", JOptionPane.QUESTION_MESSAGE);
+            if (nombre == null) {
+                return "Jugador";
+            }
+            nombre = nombre.trim();
+            if (nombre.isEmpty()) {
+                JOptionPane.showMessageDialog(this, "Debes ingresar un nombre.", "Dato requerido", JOptionPane.WARNING_MESSAGE);
+            }
+        } while (nombre.isEmpty());
+        return nombre;
+    }
+
+    private void actualizarDatosJugador() {
+        datosJugador.setText("Jugador: " + jugador.getNombre() + "    |    Puntaje: " + jugador.getPuntaje());
+    }
+
+    private JMenuBar crearBarraMenu() {
+        JMenuBar barra = new JMenuBar();
+        JMenu adicionales = new JMenu("Otros ejercicios TP6");
+        for (int numero : new int[]{3, 4, 5}) {
+            JMenuItem item = new JMenuItem("Ejercicio 6." + numero);
+            item.addActionListener(e -> abrirEjercicio(numero, "Ejercicio 6." + numero));
+            adicionales.add(item);
+        }
+        JMenu opciones = new JMenu("Opciones");
+        JMenuItem nuevoJugador = new JMenuItem("Nuevo jugador");
+        nuevoJugador.addActionListener(e -> {
+            jugador.cambiarNombre(solicitarNombre());
+            jugador.reiniciarPuntaje();
+        });
+        JMenuItem ayuda = new JMenuItem("Ayuda");
+        ayuda.addActionListener(e -> JOptionPane.showMessageDialog(this,
+            "Elegí un juego. Los aciertos suman puntos y las respuestas incorrectas los restan.\n"
+                + "En el juego final hay tres intentos para adivinar el anagrama.",
+            "Ayuda", JOptionPane.INFORMATION_MESSAGE));
+        JMenuItem salir = new JMenuItem("Salir");
+        salir.addActionListener(e -> dispose());
+        opciones.add(nuevoJugador);
+        opciones.add(ayuda);
+        opciones.addSeparator();
+        opciones.add(salir);
+        barra.add(adicionales);
+        barra.add(opciones);
+        return barra;
     }
 
     private Border crearBordeDefault(Integer top, Integer left, Integer bottom, Integer right) {
@@ -36,25 +91,27 @@ public class TP6 extends JFrame {
         JPanel menuPanel = new JPanel(new BorderLayout());
         menuPanel.setBorder(crearBordeDefault(10, 10, 10, 10));
 
-        JLabel lblTitulo = new JLabel("TP 6 - PROGRAMAS", SwingConstants.CENTER);
+        JLabel lblTitulo = new JLabel("JAVA STRING GAMES", SwingConstants.CENTER);
         lblTitulo.setBorder(BorderFactory.createEmptyBorder(0, 10, 10, 10));
         lblTitulo.setFont(new Font("Arial", Font.BOLD, 30));
 
-        JPanel buttonPanel = new JPanel(new GridLayout(3, 4, 10, 5));
-        int ejercicios[] = {1, 2, 3, 4, 5, 6, 7, 8, 9, 12, 13, 14};
+        JPanel buttonPanel = new JPanel(new GridLayout(3, 3, 10, 8));
+        int ejercicios[] = {1, 2, 6, 7, 8, 9, 12, 13, 14};
+        String[] nombres = {"Palabra más corta", "Acierta la contraseña", "El espejo", "Buscador de palabras", "Palíndromo", "Traductor Javalandia", "¿Son anagramas?", "Contador de letras", "Desafío final del anagrama"};
         for (int i = 0; i < ejercicios.length; i++) {
             int ejercicio = ejercicios[i];
-            String nombre = "Ejercicio 6." + ejercicio;
+            String nombre = nombres[i];
             JButton button = new JButton(nombre);
-            button.addActionListener(e -> {
-                setTitle("TP 6 - " + nombre);
-                reiniciarEjercicio(nombre, crearEjercicio(ejercicio));
-                navegador.show(contenedor, nombre);
-            });
+            button.addActionListener(e -> abrirEjercicio(ejercicio, nombre));
             buttonPanel.add(button);
         }
 
-        menuPanel.add(lblTitulo, BorderLayout.NORTH);
+        JPanel cabecera = new JPanel(new GridLayout(2, 1));
+        cabecera.add(lblTitulo);
+        datosJugador.setHorizontalAlignment(SwingConstants.CENTER);
+        datosJugador.setFont(new Font("Arial", Font.BOLD, 16));
+        cabecera.add(datosJugador);
+        menuPanel.add(cabecera, BorderLayout.NORTH);
         menuPanel.add(buttonPanel, BorderLayout.CENTER);
 
         panel.add(menuPanel, BorderLayout.NORTH);
@@ -62,6 +119,12 @@ public class TP6 extends JFrame {
 
         navegador.show(contenedor, "Inicio");
         return panel;
+    }
+
+    private void abrirEjercicio(int ejercicio, String nombre) {
+        setTitle("JAVA STRING GAMES - " + nombre);
+        reiniciarEjercicio(nombre, crearEjercicio(ejercicio));
+        navegador.show(contenedor, nombre);
     }
 
     private void reiniciarEjercicio(String nombre, JPanel ejercicio) {
@@ -83,7 +146,7 @@ public class TP6 extends JFrame {
             case 1:
                 return new ejercicio6_1();
             case 2:
-                return new ejercicio6_2();
+                return new ejercicio6_2(jugador);
             case 3:
                 return new ejercicio6_3();
             case 4:
@@ -103,7 +166,7 @@ public class TP6 extends JFrame {
             case 13:
                 return new ejercicio6_13();
             case 14:
-                return new ejercicio6_14();
+                return new ejercicio6_14(jugador);
             default:
                 return inicio();
         }

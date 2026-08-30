@@ -24,6 +24,10 @@ public class ejercicio6_6 extends JPanel {
 
         submitButton.addActionListener(e -> {
             String cadena = inputField.getText();
+            if (cadena.trim().isEmpty()) {
+                JOptionPane.showMessageDialog(this, "Debes ingresar una cadena.", "Dato inválido", JOptionPane.WARNING_MESSAGE);
+                return;
+            }
             resultArea.setText(invertir(cadena));
         });
 

@@ -3,105 +3,64 @@ package unidad6;
 import javax.swing.*;
 import java.awt.*;
 
-
-// 6.2. Diseñar el juego acierta la contraseña. La mecánica del juego es la siguiente: el pri­ mer jugador introduce la contraseña; a continuación, el segundo jugador debe teclear palabras hasta que la acierte. Realizar dos versiones; en la primera las únicas pistas que se proporcionan son el número de caracteres y cuáles son el primer y el último carácter de la contraseña. En la segunda versión se facilita el juego indicando si la palabra introducida es mayor o menor, alfabéticamente, que la contraseña
-
 public class ejercicio6_2 extends JPanel {
+    private String contrasena = "";
+    private int version;
+    private final Jugador jugador;
+    private final JTextField intentoField = new JTextField(14);
+    private final JPasswordField contrasenaField = new JPasswordField(14);
+    private final JTextArea resultado = new JTextArea(9, 25);
+    private final JButton continuar = new JButton("Continuar");
 
-    String contraseña = "";
-    int version = 0;
+    public ejercicio6_2() { this(null); }
 
-    public ejercicio6_2() {
-
-        JLabel titleLabel = new JLabel("Acierta la contraseña", SwingConstants.CENTER);
-        titleLabel.setFont(new Font("Arial", Font.BOLD, 20));
-
-        JTextField inputField = new JTextField(12);
-        inputField.setFont(new Font("Arial", Font.PLAIN, 15));
-        inputField.setHorizontalAlignment(SwingConstants.CENTER);
-
-        JButton submitButton = new JButton("Ingresar");
-
-        JTextArea resultArea = new JTextArea(10,20);
-        resultArea.setEditable(false);
-        resultArea.setText("Ingrese 1 para la primera version o 2 para la segunda.\n");
-
-        submitButton.addActionListener(e -> {
-            String palabra = inputField.getText();
-
-            if (version == 0) {
-                try {
-                    version = Integer.parseInt(palabra);
-                    if (version == 1 || version == 2) {
-                        resultArea.setText("Jugador 1, ingrese la contraseña.\n");
-                    } else {
-                        resultArea.setText("Ingrese 1 o 2.\n");
-                        version = 0;
-                    }
-                } catch (NumberFormatException ex) {
-                    JOptionPane.showMessageDialog(resultArea, "Error mortal", "Error", JOptionPane.ERROR_MESSAGE);
-                }
-            } else if (contraseña.equals("")) {
-                contraseña = palabra;
-
-                if (contraseña.equals("")) {
-                    resultArea.setText("La contraseña no puede estar vacia.\n");
-                } else if (version == 1) {
-                    resultArea.setText("Tiene " + contraseña.length() + " caracteres.\n");
-                    resultArea.append("Empieza con " + contraseña.charAt(0) + " y termina con " + contraseña.charAt(contraseña.length() - 1) + ".\n");
-                } else {
-                    resultArea.setText("Jugador 2, intente adivinar la contraseña.\n");
-                }
-            } else if (palabra.equals(contraseña)) {
-                resultArea.append("Adivinaste la contraseña.");
-                inputField.setEditable(false);
-                submitButton.setEnabled(false);
-            } else if (version == 2) {
-                if (palabra.compareToIgnoreCase(contraseña) < 0) {
-                    resultArea.append("La palabra es menor alfabeticamente.\n");
-                } else {
-                    resultArea.append("La palabra es mayor alfabeticamente.\n");
-                }
-            } else {
-                resultArea.append("No es la contraseña.\n");
-            }
-
-            inputField.setText("");
-        });
-
-        JPanel mainPanel = new JPanel(new GridBagLayout());
-            GridBagConstraints gbc = new GridBagConstraints();
-            JPanel leftPanel = new JPanel(new BorderLayout());
-                JPanel inputPanel = new JPanel(new FlowLayout(FlowLayout.CENTER, 5, 5));
-                    inputPanel.add(inputField);
-                    inputPanel.add(submitButton);
-                leftPanel.add(titleLabel, BorderLayout.NORTH);
-                leftPanel.add(inputPanel, BorderLayout.CENTER);
-            JPanel rightPanel = new JPanel();
-                rightPanel.add(new JScrollPane(resultArea));
-            gbc.gridx = 0;
-            gbc.gridy = 0;
-            gbc.fill = GridBagConstraints.BOTH;
-            gbc.insets = new Insets(5, 5, 5, 20);
-            mainPanel.add(leftPanel, gbc);
-            gbc.gridx = 1;
-            gbc.insets = new Insets(5, 5, 5, 5);
-            mainPanel.add(rightPanel, gbc);
-
-        setLayout(new BorderLayout());
-        add(mainPanel, BorderLayout.CENTER);
+    public ejercicio6_2(Jugador jugador) {
+        this.jugador = jugador;
+        setLayout(new BorderLayout(8, 8));
+        JLabel titulo = new JLabel("Acierta la contraseña", SwingConstants.CENTER);
+        titulo.setFont(new Font("Arial", Font.BOLD, 20));
+        add(titulo, BorderLayout.NORTH);
+        resultado.setEditable(false);
+        resultado.setText("Elegí una versión: 1 (pistas) o 2 (pistas alfabéticas).\n");
+        JPanel entrada = new JPanel(new GridLayout(0, 2, 6, 6));
+        entrada.add(new JLabel("Versión (1 o 2):"));
+        JTextField versionField = new JTextField(14);
+        entrada.add(versionField);
+        entrada.add(new JLabel("Jugador 1 - contraseña:")); entrada.add(contrasenaField);
+        entrada.add(new JLabel("Jugador 2 - intento:")); entrada.add(intentoField);
+        entrada.add(new JLabel()); entrada.add(continuar);
+        contrasenaField.setEnabled(false); intentoField.setEnabled(false);
+        continuar.addActionListener(e -> procesar(versionField));
+        add(entrada, BorderLayout.CENTER);
+        add(new JScrollPane(resultado), BorderLayout.SOUTH);
     }
 
-    private static void mostrarEnVentana() {
-        JFrame frame = new JFrame("Ejercicio 6.2");
-        frame.setSize(560, 300);
-        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        frame.setLocationRelativeTo(null);
-        frame.add(new ejercicio6_2());
-        frame.setVisible(true);
+    private void procesar(JTextField versionField) {
+        if (version == 0) {
+            String textoVersion = versionField.getText().trim();
+            if (!textoVersion.equals("1") && !textoVersion.equals("2")) { advertir("Ingresá 1 o 2 para elegir la versión."); return; }
+            version = Integer.parseInt(textoVersion);
+            versionField.setEnabled(false); contrasenaField.setEnabled(true);
+            resultado.setText("Jugador 1: ingresá la contraseña. Quedará oculta.\n"); return;
+        }
+        if (contrasena.isEmpty()) {
+            String ingresada = new String(contrasenaField.getPassword());
+            if (ingresada.trim().isEmpty()) { advertir("La contraseña no puede estar vacía."); return; }
+            contrasena = ingresada; contrasenaField.setText(""); contrasenaField.setEnabled(false); intentoField.setEnabled(true);
+            resultado.setText("Jugador 2: adiviná la contraseña. Tiene " + contrasena.length() + " caracteres, comienza con '" + contrasena.charAt(0) + "' y termina con '" + contrasena.charAt(contrasena.length() - 1) + "'.\n"); return;
+        }
+        String intento = intentoField.getText();
+        if (intento.trim().isEmpty()) { advertir("Debes ingresar un intento."); return; }
+        intentoField.setText("");
+        if (intento.equals(contrasena)) {
+            resultado.append("¡Adivinaste la contraseña! +50 puntos.\n"); cambiarPuntaje(50); intentoField.setEnabled(false); continuar.setEnabled(false);
+        } else {
+            resultado.append("Contraseña incorrecta. -10 puntos.\n"); cambiarPuntaje(-10);
+            if (version == 2) resultado.append("La palabra introducida es alfabéticamente " + (intento.compareToIgnoreCase(contrasena) < 0 ? "menor" : "mayor") + " que la contraseña.\n");
+        }
     }
 
-    public static void main(String[] args) {
-        SwingUtilities.invokeLater(ejercicio6_2::mostrarEnVentana);
-    }
+    private void cambiarPuntaje(int puntos) { if (jugador != null) { if (puntos >= 0) jugador.sumarPuntos(puntos); else jugador.restarPuntos(-puntos); } }
+    private void advertir(String mensaje) { JOptionPane.showMessageDialog(this, mensaje, "Dato inválido", JOptionPane.WARNING_MESSAGE); }
+    public static void main(String[] args) { SwingUtilities.invokeLater(() -> { JFrame ventana = new JFrame("Ejercicio 6.2"); ventana.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE); ventana.add(new ejercicio6_2()); ventana.pack(); ventana.setLocationRelativeTo(null); ventana.setVisible(true); }); }
 }

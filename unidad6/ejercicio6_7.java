@@ -29,6 +29,10 @@ public class ejercicio6_7 extends JPanel {
         submitButton.addActionListener(e -> {
             String frase = fraseField.getText();
             String palabra = palabraField.getText();
+            if (frase.trim().isEmpty() || palabra.trim().isEmpty()) {
+                JOptionPane.showMessageDialog(this, "Debes ingresar una frase y una palabra.", "Dato inválido", JOptionPane.WARNING_MESSAGE);
+                return;
+            }
             int cantidad = 0;
             int pos = 0;
 

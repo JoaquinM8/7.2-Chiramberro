@@ -30,6 +30,11 @@ public class ejercicio6_1 extends JPanel {
             String palabra1 = palabra1Field.getText();
             String palabra2 = palabra2Field.getText();
 
+            if (palabra1.trim().isEmpty() || palabra2.trim().isEmpty()) {
+                JOptionPane.showMessageDialog(this, "Debes ingresar las dos palabras.", "Dato inválido", JOptionPane.WARNING_MESSAGE);
+                return;
+            }
+
             if (palabra1.length() < palabra2.length()) {
                 resultArea.setText("La palabra mas corta es: " + palabra1);
             } else if (palabra2.length() < palabra1.length()) {

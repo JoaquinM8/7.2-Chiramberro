@@ -48,7 +48,7 @@ public class e7_10s extends JPanel {
         datos.add(new JLabel("Nombre jefe estacion:")); datos.add(nombreJefe);
         datos.add(new JLabel("DNI jefe estacion:")); datos.add(dniJefe);
 
-        JTextArea resultado = new JTextArea(7, 38);
+        JTextArea resultado = new JTextArea(10, 45);
         resultado.setEditable(false);
         JButton crear = new JButton("Crear tren");
         crear.addActionListener(e -> {

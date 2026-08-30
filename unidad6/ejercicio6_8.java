@@ -21,7 +21,12 @@ public class ejercicio6_8 extends JPanel {
         resultArea.setEditable(false);
 
         submitButton.addActionListener(e -> {
-            String frase = inputField.getText().replace(" ", "").toLowerCase();
+            String entrada = inputField.getText();
+            if (entrada.trim().isEmpty()) {
+                JOptionPane.showMessageDialog(this, "Debes ingresar una frase.", "Dato inválido", JOptionPane.WARNING_MESSAGE);
+                return;
+            }
+            String frase = entrada.replace(" ", "").toLowerCase();
             String invertida = "";
 
             for (int i = frase.length() - 1; i >= 0; i--) {

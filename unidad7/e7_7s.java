@@ -22,7 +22,7 @@ public class e7_7s extends JPanel {
         JTextField nombreBanco = new JTextField(12);
         JTextField capital = new JTextField(10);
         JTextField direccion = new JTextField(15);
-        JTextArea resultado = new JTextArea(8, 35);
+        JTextArea resultado = new JTextArea(10, 45);
         resultado.setEditable(false);
         JButton crear = new JButton("Crear y vincular");
         crear.addActionListener(e -> {

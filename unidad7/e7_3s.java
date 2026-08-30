@@ -6,7 +6,7 @@ import java.awt.*;
 public class e7_3s extends JPanel {
     public e7_3s() {
         setLayout(new FlowLayout());
-        JTextArea resultado = new JTextArea(12, 35);
+        JTextArea resultado = new JTextArea(12, 45);
         resultado.setEditable(false);
         JButton probar = new JButton("Probar constructores y metodos");
         probar.addActionListener(e -> {
