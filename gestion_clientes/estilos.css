@@ -1,0 +1,249 @@
+/* =============================================================
+   estilos.css - Hoja de estilos del proyecto "Gestion de Clientes"
+   Solo sirve para que la aplicacion se vea prolija.
+   ============================================================= */
+
+* {
+    box-sizing: border-box;
+}
+
+body {
+    margin: 0;
+    font-family: "Segoe UI", Tahoma, Arial, sans-serif;
+    font-size: 16px;
+    color: #24303f;
+    background-color: #f2f5f9;
+}
+
+/* ---------- Cabecera y menu ---------- */
+.cabecera {
+    background-color: #1f4e79;
+    color: #ffffff;
+    padding: 18px 24px;
+}
+
+.cabecera h1 {
+    margin: 0 0 12px 0;
+    font-size: 24px;
+    letter-spacing: 1px;
+}
+
+.menu a {
+    display: inline-block;
+    margin-right: 8px;
+    padding: 8px 14px;
+    color: #dce8f5;
+    text-decoration: none;
+    border-radius: 4px;
+    background-color: rgba(255, 255, 255, 0.12);
+}
+
+.menu a:hover {
+    background-color: rgba(255, 255, 255, 0.28);
+}
+
+.menu a.activo {
+    background-color: #ffffff;
+    color: #1f4e79;
+    font-weight: bold;
+}
+
+/* ---------- Contenido ---------- */
+.contenido {
+    max-width: 1000px;
+    margin: 24px auto;
+    padding: 0 16px;
+}
+
+.tarjeta {
+    background-color: #ffffff;
+    border: 1px solid #dde4ec;
+    border-radius: 8px;
+    padding: 20px 24px;
+    margin-bottom: 20px;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
+}
+
+h2 {
+    margin-top: 0;
+    color: #1f4e79;
+    border-bottom: 2px solid #e6edf5;
+    padding-bottom: 8px;
+}
+
+/* ---------- Grilla de tarjetas del inicio ---------- */
+.grilla {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 16px;
+}
+
+.grilla .tarjeta {
+    flex: 1 1 260px;
+    margin-bottom: 0;
+}
+
+.grilla .tarjeta a {
+    color: #1f4e79;
+    font-weight: bold;
+}
+
+/* ---------- Tablas ---------- */
+table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 10px;
+}
+
+th, td {
+    padding: 10px 12px;
+    text-align: left;
+    border-bottom: 1px solid #e6edf5;
+}
+
+th {
+    background-color: #1f4e79;
+    color: #ffffff;
+}
+
+tbody tr:nth-child(even) {
+    background-color: #f7fafd;
+}
+
+tbody tr:hover {
+    background-color: #eaf2fb;
+}
+
+.tabla-envoltura {
+    overflow-x: auto;
+}
+
+/* ---------- Formularios ---------- */
+form {
+    max-width: 520px;
+}
+
+.campo {
+    margin-bottom: 14px;
+}
+
+.campo label {
+    display: block;
+    margin-bottom: 5px;
+    font-weight: bold;
+    color: #3b4a5c;
+}
+
+.campo input,
+.campo select {
+    width: 100%;
+    padding: 9px 10px;
+    border: 1px solid #c6d2e0;
+    border-radius: 4px;
+    font-size: 15px;
+}
+
+.campo input:focus {
+    border-color: #1f4e79;
+    outline: none;
+}
+
+.campo.error input {
+    border-color: #c0392b;
+}
+
+input[type="submit"] {
+    background-color: #1f4e79;
+    color: #ffffff;
+    border: none;
+    padding: 11px 22px;
+    font-size: 15px;
+    border-radius: 4px;
+    cursor: pointer;
+}
+
+input[type="submit"]:hover {
+    background-color: #163d5f;
+}
+
+/* ---------- Botones y enlaces de accion ---------- */
+.boton {
+    display: inline-block;
+    padding: 5px 10px;
+    border-radius: 4px;
+    text-decoration: none;
+    font-size: 14px;
+    border: 1px solid transparent;
+}
+
+.boton-editar {
+    background-color: #f0ad4e;
+    color: #ffffff;
+}
+
+.boton-eliminar {
+    background-color: #c0392b;
+    color: #ffffff;
+}
+
+.boton-nuevo {
+    display: inline-block;
+    background-color: #1f4e79;
+    color: #ffffff;
+    padding: 10px 18px;
+    border-radius: 4px;
+    text-decoration: none;
+    font-weight: bold;
+}
+
+/* ---------- Avisos (mensaje flash) ---------- */
+.aviso {
+    padding: 12px 16px;
+    border-radius: 4px;
+    margin-bottom: 18px;
+    border-left: 5px solid;
+}
+
+.aviso-exito {
+    background-color: #e6f6ec;
+    border-color: #1e7e34;
+    color: #1e7e34;
+}
+
+.aviso-error {
+    background-color: #fdecea;
+    border-color: #c0392b;
+    color: #c0392b;
+}
+
+.aviso-info {
+    background-color: #e8f1fb;
+    border-color: #1f4e79;
+    color: #1f4e79;
+}
+
+/* ---------- Lista de errores ---------- */
+.lista-errores {
+    background-color: #fdecea;
+    border-left: 5px solid #c0392b;
+    color: #c0392b;
+    padding: 10px 16px 10px 32px;
+    border-radius: 4px;
+}
+
+/* ---------- Pie ---------- */
+.pie {
+    text-align: center;
+    color: #7b8794;
+    font-size: 14px;
+    padding: 18px 0 26px 0;
+}
+
+/* ---------- Etiqueta de total ---------- */
+.total {
+    text-align: right;
+    font-weight: bold;
+    font-size: 17px;
+    color: #1f4e79;
+    margin-top: 14px;
+}
