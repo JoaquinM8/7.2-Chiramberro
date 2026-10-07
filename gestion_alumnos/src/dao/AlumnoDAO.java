@@ -2,7 +2,6 @@ package dao;
 
 import conexion.ConexionBD;
 import modelo.Alumno;
-import modelo.Curso;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -13,22 +12,34 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * DAO de la tabla {@code alumnos}.
+ * DAO (Data Access Object) de la tabla {@code alumnos}.
  *
- * Usa consultas preparadas con marcadores de posicion (?) tanto para las
- * operaciones simples como para las consultas avanzadas (JOIN, LIKE, filtros).
+ * Operaciones exigidas por las Entregas 3 y 4:
  *
- * Nunca se construye SQL concatenando datos del usuario. Por ejemplo, para
- * buscar por nombre se manda el texto dentro del valor del marcador:
+ *   insertar(Alumno)          -> boolean   INSERT INTO alumnos ...
+ *   listar()                  -> List      recorriendo el ResultSet
+ *   actualizar(Alumno)        -> boolean   UPDATE ... WHERE id = ?
+ *   eliminar(int)             -> boolean   DELETE ... WHERE id = ?
+ *   buscarPorApellido(String) -> List      LIKE %texto%
+ *   buscarPorCurso(String)    -> List      alumnos de un curso
+ *   cantidadAlumnos()         -> int       COUNT(*)
+ *   promedioEdad()            -> double    AVG(edad)
  *
- *      ps.setString(1, "%" + texto + "%");   ->   SELECT ... WHERE nombre LIKE ?
+ * REGLA DE SEGURIDAD: se usa PreparedStatement de forma EXCLUSIVA. Los datos
+ * del usuario nunca se concatenan dentro del texto SQL, sino que viajan como
+ * marcadores de posicion (?):
  *
- * de modo que un texto con comillas o con la palabra DROP no puede alterar
- * la consulta. Esa es la diferencia entre una app vulnerable y una segura.
+ *      ps.setString(1, "%" + texto + "%");  ->  SELECT ... WHERE apellido LIKE ?
+ *
+ * De ese modo un texto con comillas o con la palabra DROP no puede alterar la
+ * consulta (prevencion de SQL Injection).
+ *
+ * El DAO no conoce Swing ni muestra mensajes: solo devuelve objetos del
+ * modelo o booleanos, y convierte los fallos en SQLException.
  */
 public class AlumnoDAO {
 
-    /** Proyeccion comun a las consultas: datos del alumno + datos del curso. */
+    /** Proyeccion comun: datos del alumno + datos de su curso (INNER JOIN). */
     private static final String SELECT_BASE =
             "SELECT a.id, a.nombre, a.apellido, a.email, a.edad, "
           + "       c.id AS curso_id, c.nombre AS curso_nombre "
@@ -47,36 +58,63 @@ public class AlumnoDAO {
     private static final String SQL_ELIMINAR =
             "DELETE FROM alumnos WHERE id = ?";
 
+    private static final String SQL_CANTIDAD =
+            "SELECT COUNT(*) FROM alumnos";
+
+    private static final String SQL_PROMEDIO_EDAD =
+            "SELECT AVG(edad) FROM alumnos";
+
     /** Verifica si un email ya esta en uso por otro alumno. */
     private static final String SQL_EMAIL_EN_USO =
             "SELECT COUNT(*) FROM alumnos WHERE email = ? AND id <> ?";
 
     /* =============================================================
-       OPERACIONES DE LECTURA
+       1) CONSULTAS DE LECTURA
        ============================================================= */
 
     /**
      * Devuelve todos los alumnos con el nombre de su curso resuelto
-     * mediante un INNER JOIN. Es la consulta principal de la pantalla.
+     * mediante un INNER JOIN.
+     *
+     * @return lista con todos los alumnos (vacia si la tabla no tiene filas).
      */
     public List<Alumno> listar() throws SQLException {
         return consultar(SELECT_BASE + " ORDER BY a.apellido, a.nombre", null);
     }
 
     /**
-     * Devuelve solo los alumnos de un curso concreto.
+     * Busca alumnos cuyo APELLIDO contenga el texto recibido (LIKE %texto%).
      *
-     * @param cursoId identificador del curso; el valor viaja como marcador (?).
+     * @param texto fragmento a buscar; se envuelve con % para usar LIKE.
+     * @return coincidencias, vacia si no hay resultados.
      */
-    public List<Alumno> listarPorCurso(int cursoId) throws SQLException {
-        String sql = SELECT_BASE + " WHERE a.curso_id = ? ORDER BY a.apellido, a.nombre";
-        return consultar(sql, ps -> ps.setInt(1, cursoId));
+    public List<Alumno> buscarPorApellido(String texto) throws SQLException {
+        String sql = SELECT_BASE
+                   + " WHERE a.apellido LIKE ? "
+                   + " ORDER BY a.apellido, a.nombre";
+
+        String patron = "%" + (texto == null ? "" : texto.trim()) + "%";
+        return consultar(sql, ps -> ps.setString(1, patron));
     }
 
     /**
-     * Busca alumnos cuyo nombre, apellido o email contengan el texto buscado.
+     * Devuelve los alumnos de un curso, identificado por su nombre
+     * (por ejemplo "4°7"), tal como se carga en el JComboBox.
      *
-     * @param texto fragmento a buscar; se envuelve con % para usar LIKE.
+     * @param curso nombre exacto del curso; viaja como marcador (?).
+     */
+    public List<Alumno> buscarPorCurso(String curso) throws SQLException {
+        String sql = SELECT_BASE
+                   + " WHERE c.nombre = ? "
+                   + " ORDER BY a.apellido, a.nombre";
+
+        String nombre = (curso == null) ? "" : curso.trim();
+        return consultar(sql, ps -> ps.setString(1, nombre));
+    }
+
+    /**
+     * Busqueda libre (extra, ademas de lo pedido): nombre, apellido o email.
+     * El texto tambien viaja como marcador: nunca se concatena al SQL.
      */
     public List<Alumno> buscar(String texto) throws SQLException {
         String sql = SELECT_BASE
@@ -85,7 +123,7 @@ public class AlumnoDAO {
                    + "    OR a.email    LIKE ? "
                    + " ORDER BY a.apellido, a.nombre";
 
-        String patron = "%" + texto + "%";
+        String patron = "%" + (texto == null ? "" : texto.trim()) + "%";
         return consultar(sql, ps -> {
             ps.setString(1, patron);
             ps.setString(2, patron);
@@ -93,7 +131,7 @@ public class AlumnoDAO {
         });
     }
 
-    /** Devuelve un alumno por su id, o null si no existe. */
+    /** Devuelve un alumno por su id, o {@code null} si no existe. */
     public Alumno buscarPorId(int id) throws SQLException {
         String sql = SELECT_BASE + " WHERE a.id = ?";
 
@@ -102,12 +140,45 @@ public class AlumnoDAO {
     }
 
     /**
+     * Total de alumnos de la tabla, calculado por la base con COUNT(*).
+     *
+     * @return cantidad de registros de la tabla alumnos.
+     */
+    public int cantidadAlumnos() throws SQLException {
+        try (Connection cx = ConexionBD.conectar();
+             PreparedStatement ps = cx.prepareStatement(SQL_CANTIDAD);
+             ResultSet rs = ps.executeQuery()) {
+
+            return rs.next() ? rs.getInt(1) : 0;
+        }
+    }
+
+    /**
+     * Promedio de la columna edad, calculado por la base con AVG(edad).
+     *
+     * @return el promedio; 0.0 si la tabla esta vacia.
+     */
+    public double promedioEdad() throws SQLException {
+        try (Connection cx = ConexionBD.conectar();
+             PreparedStatement ps = cx.prepareStatement(SQL_PROMEDIO_EDAD);
+             ResultSet rs = ps.executeQuery()) {
+
+            if (rs.next()) {
+                double promedio = rs.getDouble(1);
+                // AVG devuelve NULL cuando no hay filas: se traduce en 0.0.
+                return rs.wasNull() ? 0.0 : promedio;
+            }
+            return 0.0;
+        }
+    }
+
+    /**
      * Consulta auxiliar interna: arma el SQL, carga los parametros y
      * transforma cada fila del ResultSet en un objeto Alumno.
      *
      * @param sql        consulta completa con sus marcadores ?
-     * @param parametros accion que asigna los valores a los marcadores.
-     *                    Puede ser null cuando la consulta no lleva parametros.
+     * @param parametros bloque que asigna los valores a los marcadores;
+     *                   puede ser null cuando la consulta no tiene parametros.
      */
     private List<Alumno> consultar(String sql, CargaParametros parametros) throws SQLException {
         List<Alumno> alumnos = new ArrayList<>();
@@ -121,14 +192,15 @@ public class AlumnoDAO {
 
             try (ResultSet rs = ps.executeQuery()) {
                 while (rs.next()) {
-                    Curso curso = new Curso(rs.getInt("curso_id"), rs.getString("curso_nombre"));
-                    alumnos.add(new Alumno(
+                    Alumno alumno = new Alumno(
                             rs.getInt("id"),
                             rs.getString("nombre"),
                             rs.getString("apellido"),
                             rs.getString("email"),
                             rs.getInt("edad"),
-                            curso));
+                            rs.getString("curso_nombre"));
+                    alumno.setCursoId(rs.getInt("curso_id"));
+                    alumnos.add(alumno);
                 }
             }
         }
@@ -136,11 +208,16 @@ public class AlumnoDAO {
     }
 
     /* =============================================================
-       OPERACIONES DE ESCRITURA
+       2) CONSULTAS DE ESCRITURA (todas devuelven boolean)
        ============================================================= */
 
-    /** Inserta un alumno nuevo y le devuelve el id generado. */
-    public void insertar(Alumno alumno) throws SQLException {
+    /**
+     * Inserta un alumno nuevo. Si la base acepto el registro, el objeto
+     * recibido queda ademas con el id autogenerado.
+     *
+     * @return {@code true} si se inserto exactamente una fila.
+     */
+    public boolean insertar(Alumno alumno) throws SQLException {
         try (Connection cx = ConexionBD.conectar();
              PreparedStatement ps = cx.prepareStatement(SQL_INSERTAR, Statement.RETURN_GENERATED_KEYS)) {
 
@@ -149,18 +226,27 @@ public class AlumnoDAO {
             ps.setString(3, alumno.getEmail());
             ps.setInt(4, alumno.getEdad());
             ps.setInt(5, alumno.getCursoId());
-            ps.executeUpdate();
 
-            try (ResultSet claves = ps.getGeneratedKeys()) {
-                if (claves.next()) {
-                    alumno.setId(claves.getInt(1));
+            int filas = ps.executeUpdate();
+
+            if (filas > 0) {
+                try (ResultSet claves = ps.getGeneratedKeys()) {
+                    if (claves.next()) {
+                        alumno.setId(claves.getInt(1));
+                    }
                 }
             }
+            return filas > 0;
         }
     }
 
-    /** Actualiza todos los datos editables del alumno identificado por su id. */
-    public void actualizar(Alumno alumno) throws SQLException {
+    /**
+     * Actualiza los datos del alumno identificado por su id
+     * (clausula obligatoria WHERE id = ?).
+     *
+     * @return {@code true} si se modifico exactamente una fila.
+     */
+    public boolean actualizar(Alumno alumno) throws SQLException {
         try (Connection cx = ConexionBD.conectar();
              PreparedStatement ps = cx.prepareStatement(SQL_ACTUALIZAR)) {
 
@@ -170,24 +256,29 @@ public class AlumnoDAO {
             ps.setInt(4, alumno.getEdad());
             ps.setInt(5, alumno.getCursoId());
             ps.setInt(6, alumno.getId());
-            ps.executeUpdate();
+
+            return ps.executeUpdate() > 0;
         }
     }
 
-    /** Elimina el alumno indicado. */
-    public void eliminar(int id) throws SQLException {
+    /**
+     * Elimina el alumno con el id recibido (clausula WHERE id = ?).
+     *
+     * @return {@code true} si se elimino exactamente una fila.
+     */
+    public boolean eliminar(int id) throws SQLException {
         try (Connection cx = ConexionBD.conectar();
              PreparedStatement ps = cx.prepareStatement(SQL_ELIMINAR)) {
 
             ps.setInt(1, id);
-            ps.executeUpdate();
+            return ps.executeUpdate() > 0;
         }
     }
 
     /**
      * Indica si el email ya pertenece a OTRO alumno.
      * La interfaz lo consulta antes de guardar para mostrar un mensaje claro
-     * en vez de la excepcion tecnica de clave duplicada.
+     * en lugar de la excepcion tecnica de clave duplicada.
      *
      * @param email      email a verificar
      * @param idExcluido id del alumno que se esta editando (0 si es un alta)

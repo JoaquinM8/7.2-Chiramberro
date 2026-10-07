@@ -1,47 +1,63 @@
 package modelo;
 
 /**
- * Clase de dominio: un alumno de la escuela.
+ * Clase de dominio (POJO) que representa un alumno de la escuela.
  *
- * El alumno "tiene" un curso (relacion de composicion). Se elige esta forma
- * en lugar de un simple {@code int cursoId} para que el objeto se pueda
- * mostrar solo en la interfaz y en los reportes, sin volver a consultar
- * la base de datos.
+ * Atributos exigidos por la Entrega 3:
+ *   - id      (int)
+ *   - nombre  (String)
+ *   - apellido(String)
+ *   - email   (String)
+ *   - edad    (int)
+ *   - curso   (String)   <-- el curso se guarda como texto, tal como pide el enunciado.
+ *
+ * Como el proyecto trabaja con una base normalizada (tabla cursos con clave
+ * foranea), el POJO guarda adicionalmente cursoId, la columna curso_id de la
+ * tabla alumnos. El nombre del curso en String permite mostrarlo en la tabla
+ * y en los mensajes sin volver a consultarar la base de datos.
  */
 public class Alumno {
 
+    /* =============================================================
+       ATRIBUTOS (los 6 exigidos + la clave foranea)
+       ============================================================= */
     private int    id;
     private String nombre;
     private String apellido;
     private String email;
     private int    edad;
+    private String curso;
 
-    /** El curso nunca es null: si no se conoce, queda un curso vacio. */
-    private Curso curso;
+    /** Clave foranea hacia cursos.id (columna curso_id de la tabla alumnos). */
+    private int cursoId;
+
+    /* =============================================================
+       CONSTRUCTORES
+       ============================================================= */
 
     /** Constructor vacio: lo usan las consultas JDBC al armar el objeto. */
     public Alumno() {
-        this.curso = new Curso();
+        this.curso = "";
     }
 
-    /** Constructor con todos los datos. */
-    public Alumno(int id, String nombre, String apellido, String email, int edad, Curso curso) {
+    /** Constructor completo con id (para consultas y para actualizar). */
+    public Alumno(int id, String nombre, String apellido, String email, int edad, String curso) {
         this.id       = id;
         this.nombre   = nombre;
         this.apellido = apellido;
         this.email    = email;
         this.edad     = edad;
-        this.curso    = (curso == null) ? new Curso() : curso;
+        this.curso    = (curso == null) ? "" : curso;
     }
 
-    /** Constructor utilitario para altas (aun no se conoce el id). */
-    public Alumno(String nombre, String apellido, String email, int edad, Curso curso) {
+    /** Constructor con todos los datos menos el id (para altas). */
+    public Alumno(String nombre, String apellido, String email, int edad, String curso) {
         this(0, nombre, apellido, email, edad, curso);
     }
 
-    // ---------------------------------------------------------------
-    // GETTERS Y SETTERS
-    // ---------------------------------------------------------------
+    /* =============================================================
+       GETTERS Y SETTERS
+       ============================================================= */
 
     public int getId() {
         return id;
@@ -83,32 +99,37 @@ public class Alumno {
         this.edad = edad;
     }
 
-    public Curso getCurso() {
+    /** Nombre del curso en texto ("4°7"), tal como lo exige la Entrega 3. */
+    public String getCurso() {
         return curso;
     }
 
-    public void setCurso(Curso curso) {
-        this.curso = (curso == null) ? new Curso() : curso;
+    public void setCurso(String curso) {
+        this.curso = (curso == null) ? "" : curso;
     }
 
-    // ---------------------------------------------------------------
-    // METODOS DERIVADOS
-    // Son "atajos" que evitan repetir la logica en la interfaz.
-    // ---------------------------------------------------------------
-
-    /** Identificador del curso, leido del objeto curso. */
+    /** Clave foranea del curso (columna curso_id). */
     public int getCursoId() {
-        return curso.getId();
+        return cursoId;
     }
 
-    /** Fija el curso a partir de su identificador. */
     public void setCursoId(int cursoId) {
-        this.curso.setId(cursoId);
+        this.cursoId = cursoId;
     }
 
-    /** Nombre del curso, usado para mostrarlo en la tabla. */
+    /* =============================================================
+       METODOS DERIVADOS (atajos usados por la interfaz)
+       ============================================================= */
+
+    /** Alias de {@link #getCurso()}: nombre del curso para mostrar en la tabla. */
     public String getCursoNombre() {
-        return curso.getNombre();
+        return curso;
+    }
+
+    /** Fija el curso a partir de su clave foranea y de su nombre. */
+    public void setCurso(int cursoId, String nombreCurso) {
+        this.cursoId = cursoId;
+        this.curso   = (nombreCurso == null) ? "" : nombreCurso;
     }
 
     /** Nombre y apellido juntos, como se muestran en la tabla y en los mensajes. */
@@ -116,7 +137,7 @@ public class Alumno {
         return nombre + " " + apellido;
     }
 
-    /** La primera letra en mayuscula: "sofía" -> "Sofía". */
+    /** La primera letra en mayuscula: "sofia" -> "Sofia". */
     public String getNombreFormateado() {
         if (nombre == null || nombre.isEmpty()) {
             return "";
@@ -124,13 +145,13 @@ public class Alumno {
         return nombre.substring(0, 1).toUpperCase() + nombre.substring(1);
     }
 
-    // ---------------------------------------------------------------
-    // SOBRESCRITURA DE METODOS DE Object
-    // ---------------------------------------------------------------
+    /* =============================================================
+       SOBRESCRITURA DE METODOS DE Object
+       ============================================================= */
 
     @Override
     public String toString() {
-        return getNombreCompleto() + " (" + getCursoNombre() + ")";
+        return getNombreCompleto() + " (" + curso + ")";
     }
 
     @Override

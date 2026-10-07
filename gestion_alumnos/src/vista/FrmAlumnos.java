@@ -78,11 +78,19 @@ public class FrmAlumnos extends JFrame {
 
     /* =============================================================
        4) BOTONES
+       Nombres exactos exigidos por la Entrega 4.
        ============================================================= */
     private JButton btnNuevo;
     private JButton btnGuardar;
-    private JButton btnActualizar;
+    private JButton btnModificar;
     private JButton btnEliminar;
+    private JButton btnBuscar;
+    private JButton btnMostrarTodos;
+
+    /* =============================================================
+       5) RESUMEN (usa cantidadAlumnos() y promedioEdad() del DAO)
+       ============================================================= */
+    private JLabel lblEstadisticas;
 
     /** Id del alumno en edicion. 0 significa "no hay ninguna". */
     private int idEnEdicion = 0;
@@ -141,11 +149,12 @@ public class FrmAlumnos extends JFrame {
         izquierda.setBorder(BorderFactory.createTitledBorder("Datos del alumno"));
         izquierda.add(construirFormulario(), BorderLayout.CENTER);
 
-        // RIGHT: herramientas de busqueda + tabla
+        // RIGHT: herramientas de busqueda + tabla + resumen
         JPanel derecha = new JPanel(new BorderLayout(0, 10));
         derecha.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
         derecha.add(construirBuscador(), BorderLayout.NORTH);
         derecha.add(construirTabla(), BorderLayout.CENTER);
+        derecha.add(construirResumen(), BorderLayout.SOUTH);
 
         // Se reparten el espacio: 40% formulario, 60% tabla
         JSplitPane divisor = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT, izquierda, derecha);
@@ -220,7 +229,7 @@ public class FrmAlumnos extends JFrame {
         txtBuscar.setToolTipText("Busca por nombre, apellido o email");
         txtBuscar.addActionListener(e -> aplicarFiltro());
 
-        JButton btnBuscar = new JButton("Buscar");
+        btnBuscar = new JButton("Buscar");
         btnBuscar.addActionListener(e -> aplicarFiltro());
 
         JPanel filaTexto = new JPanel(new BorderLayout(6, 0));
@@ -235,8 +244,8 @@ public class FrmAlumnos extends JFrame {
             }
         });
 
-        JButton btnTodos = new JButton("Ver todos");
-        btnTodos.addActionListener(e -> {
+        btnMostrarTodos = new JButton("Mostrar todos");
+        btnMostrarTodos.addActionListener(e -> {
             txtBuscar.setText("");
             cmbFiltroCurso.setSelectedIndex(0);
             cargarAlumnos();
@@ -248,7 +257,7 @@ public class FrmAlumnos extends JFrame {
 
         JPanel botonera = new JPanel(new FlowLayout(FlowLayout.LEFT, 6, 0));
         botonera.add(btnBuscar);
-        botonera.add(btnTodos);
+        botonera.add(btnMostrarTodos);
 
         panel.add(filaTexto, BorderLayout.CENTER);
 
@@ -306,25 +315,58 @@ public class FrmAlumnos extends JFrame {
         return panel;
     }
 
+    /** Panel inferior con el total de alumnos y el promedio de edad. */
+    private JPanel construirResumen() {
+        JPanel panel = new JPanel(new FlowLayout(FlowLayout.LEFT, 10, 4));
+        panel.setBorder(BorderFactory.createTitledBorder("Resumen"));
+
+        lblEstadisticas = new JLabel("Alumnos: -   |   Promedio de edad: -");
+        lblEstadisticas.setFont(new Font("Arial", Font.BOLD, 12));
+        panel.add(lblEstadisticas);
+        return panel;
+    }
+
+    /**
+     * Pide al DAO las estadisticas de la tabla alumnos (COUNT y AVG)
+     * y las muestra en la barra de resumen.
+     */
+    private void actualizarEstadisticas() {
+        try {
+            int total = alumnoDAO.cantidadAlumnos();
+            double promedio = alumnoDAO.promedioEdad();
+
+            String promTexto = (total == 0)
+                    ? "-"
+                    : String.valueOf(Math.round(promedio * 10.0) / 10.0);
+
+            lblEstadisticas.setText("Alumnos: " + total
+                    + "   |   Promedio de edad: " + promTexto + " años");
+
+        } catch (SQLException e) {
+            lblEstadisticas.setText("Alumnos: -   |   Promedio de edad: -");
+            mostrarError(e);
+        }
+    }
+
     /** Barra inferior con las acciones. */
     private void construirBarraDeBotones() {
-        btnNuevo     = new JButton("Nuevo");
-        btnGuardar   = new JButton("Guardar");
-        btnActualizar= new JButton("Actualizar");
-        btnEliminar  = new JButton("Eliminar");
+        btnNuevo      = new JButton("Nuevo");
+        btnGuardar    = new JButton("Guardar");
+        btnModificar  = new JButton("Modificar");
+        btnEliminar   = new JButton("Eliminar");
 
         btnNuevo.addActionListener(e -> {
             limpiarFormulario();
             txtNombre.requestFocusInWindow();
         });
         btnGuardar.addActionListener(e -> guardar());
-        btnActualizar.addActionListener(e -> actualizar());
+        btnModificar.addActionListener(e -> actualizar());
         btnEliminar.addActionListener(e -> eliminar());
 
         JPanel panel = new JPanel(new FlowLayout(FlowLayout.RIGHT, 10, 12));
         panel.setBorder(BorderFactory.createEmptyBorder(0, 10, 0, 10));
 
-        for (JButton boton : new JButton[]{btnNuevo, btnGuardar, btnActualizar, btnEliminar}) {
+        for (JButton boton : new JButton[]{btnNuevo, btnGuardar, btnModificar, btnEliminar}) {
             boton.setFont(new Font("Arial", Font.BOLD, 12));
             boton.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
             boton.setPreferredSize(new Dimension(110, 32));
@@ -391,7 +433,7 @@ public class FrmAlumnos extends JFrame {
             }
             Curso filtro = (Curso) cmbFiltroCurso.getSelectedItem();
             if (filtro != null && filtro.getId() > 0) {
-                llenarTabla(alumnoDAO.listarPorCurso(filtro.getId()));
+                llenarTabla(alumnoDAO.buscarPorCurso(filtro.getNombre()));
                 return;
             }
             llenarTabla(alumnoDAO.listar());
@@ -412,9 +454,12 @@ public class FrmAlumnos extends JFrame {
                     alumno.getApellido(),
                     alumno.getEmail(),
                     alumno.getEdad(),
-                    alumno.getCursoNombre()
+                    alumno.getCurso()          // atributo String del POJO
             });
         }
+
+        // El resumen siempre refleja la base completa (COUNT y AVG).
+        actualizarEstadisticas();
     }
 
     /* =============================================================
@@ -437,7 +482,12 @@ public class FrmAlumnos extends JFrame {
                 return;
             }
 
-            alumnoDAO.insertar(alumno);
+            boolean insertado = alumnoDAO.insertar(alumno);   // devuelve boolean
+            if (!insertado) {
+                avisarValidacion("No se pudo registrar el alumno. Revisá los datos e intentá otra vez.");
+                return;
+            }
+
             informar("Alumno " + alumno.getNombreCompleto() + " registrado correctamente.");
 
             limpiarFormulario();
@@ -469,7 +519,12 @@ public class FrmAlumnos extends JFrame {
             }
 
             alumno.setId(idEnEdicion);
-            alumnoDAO.actualizar(alumno);
+            boolean modificado = alumnoDAO.actualizar(alumno);   // devuelve boolean
+            if (!modificado) {
+                avisarValidacion("No se pudo modificar: el registro ya no existe en la base.");
+                return;
+            }
+
             informar("Datos de " + alumno.getNombreCompleto() + " actualizados.");
 
             limpiarFormulario();
@@ -500,7 +555,12 @@ public class FrmAlumnos extends JFrame {
         }
 
         try {
-            alumnoDAO.eliminar(idEnEdicion);
+            boolean eliminado = alumnoDAO.eliminar(idEnEdicion);   // devuelve boolean
+            if (!eliminado) {
+                avisarValidacion("No se pudo eliminar: el registro ya no existe en la base.");
+                return;
+            }
+
             informar("Alumno eliminado.");
 
             limpiarFormulario();
@@ -564,12 +624,16 @@ public class FrmAlumnos extends JFrame {
         if (curso == null) {
             curso = new Curso();
         }
-        return new Alumno(
+
+        Alumno alumno = new Alumno(
                 txtNombre.getText().trim(),
                 txtApellido.getText().trim(),
                 txtEmail.getText().trim(),
                 Integer.parseInt(txtEdad.getText().trim()),
-                curso);
+                curso.getNombre());          // atributo curso (String) del POJO
+
+        alumno.setCursoId(curso.getId());    // clave foranea curso_id
+        return alumno;
     }
 
     /**
@@ -605,8 +669,8 @@ public class FrmAlumnos extends JFrame {
         } catch (NumberFormatException e) {
             return "La edad debe ser un número entero.";
         }
-        if (edad < 5 || edad > 120) {
-            return "La edad debe estar entre 5 y 120 años.";
+        if (edad <= 0 || edad > 120) {
+            return "La edad debe ser un número mayor a 0 y hasta 120.";
         }
 
         Curso curso = (Curso) cmbCurso.getSelectedItem();
