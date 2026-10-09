@@ -239,6 +239,12 @@ input[type="submit"]:hover {
     padding: 18px 0 26px 0;
 }
 
+/* ---------- Numeros alineados a la derecha (reportes) ---------- */
+th.numero,
+td.numero {
+    text-align: right;
+}
+
 /* ---------- Etiqueta de total ---------- */
 .total {
     text-align: right;

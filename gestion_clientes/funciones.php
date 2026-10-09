@@ -77,7 +77,8 @@ function cabecera(string $titulo, string $activa = ''): void
         <a href="index.php"            class="<?= $activa === 'menu'    ? 'activo' : '' ?>">Inicio</a>
         <a href="clientes_listado.php" class="<?= $activa === 'listado' ? 'activo' : '' ?>">Listar Clientes</a>
         <a href="cliente_alta.php"     class="<?= $activa === 'alta'    ? 'activo' : '' ?>">Dar de alta</a>
-        <a href="reporte_pedidos.php"  class="<?= $activa === 'reporte' ? 'activo' : '' ?>">Reporte de Pedidos</a>
+        <a href="reporte_pedidos.php"  class="<?= $activa === 'reporte'  ? 'activo' : '' ?>">Reporte de Pedidos</a>
+        <a href="reportes.php"         class="<?= $activa === 'reportes' ? 'activo' : '' ?>">Reportes estadisticos</a>
     </nav>
 </header>
 

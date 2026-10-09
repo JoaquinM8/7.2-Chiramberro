@@ -45,6 +45,14 @@ cabecera('Inicio', 'menu');
         <a href="reporte_pedidos.php">Ver el reporte &rarr;</a>
     </div>
 
+    <div class="tarjeta">
+        <h2>4. Reportes estadisticos</h2>
+        <p>Resumenes con funciones de agregacion: cantidad de pedidos por
+           cliente, total comprado, estadisticas generales y pedidos
+           superiores al promedio.</p>
+        <a href="reportes.php">Ver los reportes &rarr;</a>
+    </div>
+
 </div>
 
 <?php pie(); ?>

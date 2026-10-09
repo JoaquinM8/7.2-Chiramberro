@@ -34,7 +34,7 @@ CREATE TABLE `clientes` (
   `telefono` varchar(30) DEFAULT NULL,
   `ciudad` varchar(60) DEFAULT NULL,
   `fecha_alta` date NOT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_uca1400_ai_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 --
 -- Volcado de datos para la tabla `clientes`
@@ -64,7 +64,7 @@ CREATE TABLE `pedidos` (
   `descripcion` varchar(150) NOT NULL,
   `importe` decimal(10,2) NOT NULL,
   `fecha_pedido` date NOT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_uca1400_ai_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 --
 -- Volcado de datos para la tabla `pedidos`
