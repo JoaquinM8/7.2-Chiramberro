@@ -253,3 +253,147 @@ td.numero {
     color: #1f4e79;
     margin-top: 14px;
 }
+
+/* =============================================================
+   Modulo de busqueda y paginacion (listar.php)
+   ============================================================= */
+
+/* ---------- Formulario de busqueda ---------- */
+.formulario-busqueda {
+    max-width: none;
+}
+
+.formulario-busqueda .grupo-campos {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 14px 18px;
+    align-items: flex-end;
+}
+
+.formulario-busqueda .campo {
+    flex: 1 1 180px;
+    margin-bottom: 0;
+}
+
+.formulario-busqueda .campo.campo-corto {
+    flex: 0 1 140px;
+}
+
+.formulario-busqueda .acciones-busqueda {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-top: 18px;
+}
+
+.boton-buscar {
+    background-color: #1f4e79;
+    color: #ffffff;
+    border: none;
+    padding: 10px 24px;
+    font-size: 15px;
+    font-weight: bold;
+    border-radius: 4px;
+    cursor: pointer;
+    letter-spacing: 1px;
+}
+
+.boton-buscar:hover {
+    background-color: #163d5f;
+}
+
+.boton-limpiar {
+    display: inline-block;
+    padding: 9px 20px;
+    border: 1px solid #c6d2e0;
+    border-radius: 4px;
+    color: #3b4a5c;
+    text-decoration: none;
+    background-color: #f4f6f9;
+    font-size: 15px;
+}
+
+.boton-limpiar:hover {
+    background-color: #e8edf3;
+}
+
+/* ---------- Resumen y mensaje sin resultados ---------- */
+.resumen {
+    margin: 0 0 6px 0;
+    color: #3b4a5c;
+}
+
+.sin-resultados {
+    padding: 16px;
+    background-color: #fff8e6;
+    border-left: 5px solid #f0ad4e;
+    border-radius: 4px;
+    color: #8a6d3b;
+}
+
+/* ---------- Enlaces de orden en las cabeceras ---------- */
+a.orden-columna {
+    color: #ffffff;
+    text-decoration: none;
+    font-weight: bold;
+}
+
+a.orden-columna:hover {
+    text-decoration: underline;
+}
+
+/* ---------- Boton Ver ---------- */
+.boton-ver {
+    background-color: #1e7e34;
+    color: #ffffff;
+}
+
+/* ---------- Etiqueta de la ficha (cliente_ver.php) ---------- */
+.etiqueta-ficha {
+    width: 200px;
+    background-color: #eef3f8;
+    color: #1f4e79;
+}
+
+/* ---------- Paginacion (componente paginacion.php) ---------- */
+.paginacion {
+    margin-top: 20px;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    align-items: center;
+}
+
+.paginacion a,
+.paginacion span {
+    display: inline-block;
+    padding: 6px 12px;
+    border: 1px solid #c6d2e0;
+    border-radius: 4px;
+    background-color: #ffffff;
+    color: #1f4e79;
+    text-decoration: none;
+    font-size: 14px;
+}
+
+.paginacion a:hover {
+    background-color: #e8f1fb;
+}
+
+.paginacion span.pagina-actual {
+    background-color: #1f4e79;
+    border-color: #1f4e79;
+    color: #ffffff;
+    font-weight: bold;
+}
+
+.paginacion span.desactivado {
+    background-color: #f4f6f9;
+    color: #a9b6c4;
+}
+
+.paginacion span.puntos {
+    border: none;
+    background: none;
+    color: #7b8794;
+}
