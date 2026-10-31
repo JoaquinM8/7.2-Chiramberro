@@ -3,18 +3,12 @@ package modelo;
 /**
  * Clase de dominio (POJO) que representa un alumno de la escuela.
  *
- * Atributos exigidos por la Entrega 3:
- *   - id      (int)
- *   - nombre  (String)
- *   - apellido(String)
- *   - email   (String)
- *   - edad    (int)
- *   - curso   (String)   <-- el curso se guarda como texto, tal como pide el enunciado.
+ * La base está normalizada:
+ *   - cursoId es la clave foránea real (columna curso_id de alumnos);
+ *   - curso guarda el nombre del curso resuelto por JOIN, solo para mostrar.
  *
- * Como el proyecto trabaja con una base normalizada (tabla cursos con clave
- * foranea), el POJO guarda adicionalmente cursoId, la columna curso_id de la
- * tabla alumnos. El nombre del curso en String permite mostrarlo en la tabla
- * y en los mensajes sin volver a consultarar la base de datos.
+ * El POJO conserva el nombre del curso en String para poder mostrarlo en la
+ * tabla y en los mensajes sin volver a consultar la base de datos.
  */
 public class Alumno {
 
@@ -99,7 +93,7 @@ public class Alumno {
         this.edad = edad;
     }
 
-    /** Nombre del curso en texto ("4°7"), tal como lo exige la Entrega 3. */
+    /** Nombre del curso para mostrar ("4°7"); se obtiene con un JOIN. */
     public String getCurso() {
         return curso;
     }

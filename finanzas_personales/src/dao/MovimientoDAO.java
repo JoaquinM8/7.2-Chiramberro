@@ -1,0 +1,328 @@
+package ar.edu.finanzas.dao;
+
+import ar.edu.finanzas.conexion.ConexionBD;
+import ar.edu.finanzas.modelo.Movimiento;
+
+import java.math.BigDecimal;
+import java.sql.Connection;
+import java.sql.Date;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Statement;
+import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Locale;
+
+/**
+ * DAO (Data Access Object) de la tabla {@code movimientos}.
+ *
+ * Concentra todo el SQL del proyecto. La interfaz/consola nunca escribe SQL:
+ * solo llama a estos metodos y recibe objetos {@link Movimiento} o booleanos.
+ *
+ * Decisiones de diseno:
+ *
+ * <ul>
+ *   <li>Todas las consultas usan {@link PreparedStatement}. Los valores viajan
+ *       como marcadores {@code ?}, nunca concatenados: asi se previene la
+ *       inyeccion SQL y se reutiliza el plan de ejecucion.</li>
+ *   <li>Todos los recursos (Connection, PreparedStatement, ResultSet) se
+ *       cierran con try-with-resources.</li>
+ *   <li>El importe se envia con {@code setBigDecimal} para conservar los dos
+ *       decimales exactos de {@code DECIMAL(12,2)}.</li>
+ *   <li>Las fechas se convierten de {@link LocalDate} a {@link java.sql.Date}
+ *       con {@code Date.valueOf(...)}.</li>
+ * </ul>
+ */
+public class MovimientoDAO {
+
+    /* =============================================================
+       1) SQL REUTILIZABLE
+       ============================================================= */
+
+    /** Columnas que se leen en todos los SELECT. */
+    private static final String COLUMNAS =
+            "id_movimiento, id_cuenta, id_categoria, tipo, fecha, importe, "
+          + "descripcion, medio_pago, es_recurrente";
+
+    private static final String SELECT_BASE =
+            "SELECT " + COLUMNAS + " FROM movimientos";
+
+    private static final String SQL_INSERTAR =
+            "INSERT INTO movimientos "
+          + "(id_cuenta, id_categoria, tipo, fecha, importe, descripcion, medio_pago, es_recurrente) "
+          + "VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
+
+    /* =============================================================
+       2) CONSULTAS DE LECTURA
+       ============================================================= */
+
+    /**
+     * Devuelve todos los movimientos ordenados por fecha descendente
+     * (el mas reciente primero). Ante fechas iguales, ordena por id.
+     *
+     * @return lista con todos los registros; vacia si la tabla no tiene filas.
+     * @throws SQLException si falla la conexion o la consulta.
+     */
+    public List<Movimiento> listarTodos() throws SQLException {
+        String sql = SELECT_BASE + " ORDER BY fecha DESC, id_movimiento DESC";
+        return consultar(sql, null);
+    }
+
+    /**
+     * Devuelve los movimientos de un tipo ('INGRESO' o 'GASTO').
+     * El tipo se normaliza a mayusculas, por lo que tambien acepta "gasto".
+     *
+     * @param tipo tipo de movimiento a filtrar.
+     * @return lista filtrada, ordenada por fecha descendente.
+     * @throws IllegalArgumentException si el tipo es nulo o invalido.
+     * @throws SQLException              si falla la base.
+     */
+    public List<Movimiento> listarPorTipo(String tipo) throws SQLException {
+        String tipoNormalizado = normalizarTipo(tipo);
+
+        String sql = SELECT_BASE
+                   + " WHERE tipo = ? "
+                   + " ORDER BY fecha DESC, id_movimiento DESC";
+
+        return consultar(sql, ps -> ps.setString(1, tipoNormalizado));
+    }
+
+    /**
+     * Busca movimientos con fecha dentro del rango indicado, extremos
+     * incluidos (BETWEEN es inclusivo). Se ordena cronologicamente.
+     *
+     * @param desde fecha inicial (no nula).
+     * @param hasta fecha final (no nula y mayor o igual a {@code desde}).
+     * @return movimientos del rango; vacia si no hay coincidencias.
+     * @throws IllegalArgumentException si alguna fecha es nula o el rango
+     *                                  esta invertido.
+     * @throws SQLException              si falla la base.
+     */
+    public List<Movimiento> buscarPorFecha(LocalDate desde, LocalDate hasta) throws SQLException {
+        if (desde == null || hasta == null) {
+            throw new IllegalArgumentException("Las fechas 'desde' y 'hasta' son obligatorias.");
+        }
+        if (desde.isAfter(hasta)) {
+            throw new IllegalArgumentException(
+                    "El rango esta invertido: 'desde' (" + desde
+                    + ") no puede ser posterior a 'hasta' (" + hasta + ").");
+        }
+
+        String sql = SELECT_BASE
+                   + " WHERE fecha BETWEEN ? AND ? "
+                   + " ORDER BY fecha ASC, id_movimiento ASC";
+
+        return consultar(sql, ps -> {
+            ps.setDate(1, Date.valueOf(desde));
+            ps.setDate(2, Date.valueOf(hasta));
+        });
+    }
+
+    /**
+     * Devuelve los GASTOS cuyo importe supera el minimo recibido.
+     * El filtro es estricto: importe &gt; minimo.
+     *
+     * @param importeMinimo monto de corte; no nulo y no negativo.
+     * @return gastos ordenados de mayor a menor importe.
+     * @throws IllegalArgumentException si el monto es nulo o negativo.
+     * @throws SQLException              si falla la base.
+     */
+    public List<Movimiento> listarGastosMayoresA(BigDecimal importeMinimo) throws SQLException {
+        if (importeMinimo == null || importeMinimo.signum() < 0) {
+            throw new IllegalArgumentException(
+                    "El importe minimo es obligatorio y no puede ser negativo.");
+        }
+
+        String sql = SELECT_BASE
+                   + " WHERE tipo = 'GASTO' AND importe > ? "
+                   + " ORDER BY importe DESC, fecha DESC";
+
+        return consultar(sql, ps -> ps.setBigDecimal(1, importeMinimo));
+    }
+
+    /* =============================================================
+       3) INSERCION
+       ============================================================= */
+
+    /**
+     * Inserta un movimiento nuevo.
+     *
+     * Valida primero los datos con {@link #validarMovimiento(Movimiento)} para
+     * avisar con un IllegalArgumentException claro antes de llegar a MySQL.
+     * Si la base acepta el registro, el objeto recibe el id autogenerado.
+     *
+     * @param movimiento datos a insertar.
+     * @return {@code true} si se inserto exactamente una fila.
+     * @throws IllegalArgumentException si el movimiento no pasa la validacion.
+     * @throws SQLException              si falla la conexion, una FK o un CHECK
+     *                                   de la base.
+     */
+    public boolean insertar(Movimiento movimiento) throws SQLException {
+        validarMovimiento(movimiento);
+
+        try (Connection cx = ConexionBD.conectar();
+             PreparedStatement ps = cx.prepareStatement(
+                     SQL_INSERTAR, Statement.RETURN_GENERATED_KEYS)) {
+
+            ps.setInt(1, movimiento.getIdCuenta());
+            ps.setInt(2, movimiento.getIdCategoria());
+            ps.setString(3, movimiento.getTipo());
+            ps.setDate(4, Date.valueOf(movimiento.getFecha()));
+            ps.setBigDecimal(5, movimiento.getImporte());
+            ps.setString(6, movimiento.getDescripcion().trim());
+            ps.setString(7, movimiento.getMedioPago().trim());
+            ps.setBoolean(8, movimiento.isRecurrente());
+
+            int filas = ps.executeUpdate();
+
+            if (filas == 1) {
+                try (ResultSet claves = ps.getGeneratedKeys()) {
+                    if (claves.next()) {
+                        movimiento.setIdMovimiento(claves.getInt(1));
+                    }
+                }
+            }
+            return filas == 1;
+        }
+    }
+
+    /* =============================================================
+       4) VALIDACION PREVIA
+       ============================================================= */
+
+    /**
+     * Valida un movimiento antes de intentar el INSERT.
+     *
+     * Reglas:
+     * <ul>
+     *   <li>El objeto no puede ser nulo.</li>
+     *   <li>idCuenta e idCategoria deben ser mayores que cero (las FK de la
+     *       base exigen que existan; la existencia real la controla MySQL).</li>
+     *   <li>La fecha, el importe, la descripcion y el medio de pago son
+     *       obligatorios (la tabla los declara NOT NULL).</li>
+     *   <li>El importe debe ser mayor que cero (coincide con
+     *       {@code CHECK (importe > 0)}).</li>
+     *   <li>El tipo solo admite 'INGRESO' o 'GASTO'. Se normaliza a
+     *       mayusculas: "gasto" se guarda como "GASTO".</li>
+     * </ul>
+     *
+     * @param movimiento objeto a validar.
+     * @throws IllegalArgumentException si alguna regla no se cumple.
+     */
+    public void validarMovimiento(Movimiento movimiento) {
+        if (movimiento == null) {
+            throw new IllegalArgumentException("El movimiento no puede ser nulo.");
+        }
+        if (movimiento.getIdCuenta() <= 0) {
+            throw new IllegalArgumentException("Debe indicar una cuenta valida (idCuenta > 0).");
+        }
+        if (movimiento.getIdCategoria() <= 0) {
+            throw new IllegalArgumentException("Debe indicar una categoria valida (idCategoria > 0).");
+        }
+        if (movimiento.getFecha() == null) {
+            throw new IllegalArgumentException("La fecha es obligatoria.");
+        }
+        if (movimiento.getImporte() == null) {
+            throw new IllegalArgumentException("El importe es obligatorio.");
+        }
+        if (movimiento.getImporte().compareTo(BigDecimal.ZERO) <= 0) {
+            throw new IllegalArgumentException(
+                    "El importe debe ser mayor que cero. Recibido: "
+                    + movimiento.getImporte().toPlainString());
+        }
+        if (esBlanco(movimiento.getDescripcion())) {
+            throw new IllegalArgumentException("La descripcion es obligatoria.");
+        }
+        if (esBlanco(movimiento.getMedioPago())) {
+            throw new IllegalArgumentException(
+                    "El medio de pago es obligatorio (ej.: Efectivo, Transferencia, Tarjeta de debito).");
+        }
+
+        // Valida y deja el tipo canonico ("gasto" -> "GASTO").
+        movimiento.setTipo(normalizarTipo(movimiento.getTipo()));
+    }
+
+    /* =============================================================
+       5) METODOS AUXILIARES INTERNOS
+       ============================================================= */
+
+    /**
+     * Ejecuta un SELECT y transforma cada fila del ResultSet en un Movimiento.
+     *
+     * @param sql        consulta completa con sus marcadores ?.
+     * @param parametros bloque que carga los parametros; null si no hay.
+     */
+    private List<Movimiento> consultar(String sql, CargaParametros parametros)
+            throws SQLException {
+
+        List<Movimiento> movimientos = new ArrayList<>();
+
+        try (Connection cx = ConexionBD.conectar();
+             PreparedStatement ps = cx.prepareStatement(sql)) {
+
+            if (parametros != null) {
+                parametros.cargar(ps);
+            }
+
+            try (ResultSet rs = ps.executeQuery()) {
+                while (rs.next()) {
+                    movimientos.add(mapear(rs));
+                }
+            }
+        }
+        return movimientos;
+    }
+
+    /** Convierte la fila actual del ResultSet en un objeto Movimiento. */
+    private Movimiento mapear(ResultSet rs) throws SQLException {
+        Movimiento movimiento = new Movimiento();
+
+        movimiento.setIdMovimiento(rs.getInt("id_movimiento"));
+        movimiento.setIdCuenta(rs.getInt("id_cuenta"));
+        movimiento.setIdCategoria(rs.getInt("id_categoria"));
+        movimiento.setTipo(rs.getString("tipo"));
+
+        Date fecha = rs.getDate("fecha");
+        movimiento.setFecha(fecha == null ? null : fecha.toLocalDate());
+
+        movimiento.setImporte(rs.getBigDecimal("importe"));
+        movimiento.setDescripcion(rs.getString("descripcion"));
+        movimiento.setMedioPago(rs.getString("medio_pago"));
+        movimiento.setRecurrente(rs.getBoolean("es_recurrente"));
+
+        return movimiento;
+    }
+
+    /**
+     * Valida el tipo y lo devuelve en mayusculas. Se usa tanto en las altas
+     * como en los filtros para que "gasto" y "GASTO" sean equivalentes.
+     */
+    private String normalizarTipo(String tipo) {
+        if (esBlanco(tipo)) {
+            throw new IllegalArgumentException("El tipo es obligatorio ('INGRESO' o 'GASTO').");
+        }
+
+        String normalizado = tipo.trim().toUpperCase(Locale.ROOT);
+        if (!normalizado.equals("INGRESO") && !normalizado.equals("GASTO")) {
+            throw new IllegalArgumentException(
+                    "Tipo invalido: '" + tipo + "'. Solo se admite 'INGRESO' o 'GASTO'.");
+        }
+        return normalizado;
+    }
+
+    /** Indica si un texto es nulo, vacio o solo contiene espacios. */
+    private boolean esBlanco(String texto) {
+        return texto == null || texto.trim().isEmpty();
+    }
+
+    /**
+     * Interfaz funcional interna: permite pasar el bloque que carga los
+     * parametros de una consulta sin repetir el mismo codigo en cada metodo.
+     */
+    @FunctionalInterface
+    private interface CargaParametros {
+        void cargar(PreparedStatement ps) throws SQLException;
+    }
+}

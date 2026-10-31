@@ -23,7 +23,8 @@ USE escuela_java;
 -- ---------------------------------------------------------------------
 CREATE TABLE cursos (
     id      INT AUTO_INCREMENT PRIMARY KEY,
-    nombre  VARCHAR(50) NOT NULL
+    nombre  VARCHAR(50) NOT NULL,
+    CONSTRAINT uk_cursos_nombre UNIQUE (nombre)
 ) ENGINE = InnoDB DEFAULT CHARSET = utf8mb4;
 
 -- ---------------------------------------------------------------------

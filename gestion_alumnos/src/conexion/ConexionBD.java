@@ -35,7 +35,9 @@ public final class ConexionBD {
             "jdbc:mysql://localhost:" + PUERTO + "/" + BASE
             + "?useSSL=false"
             + "&allowPublicKeyRetrieval=true"
-            + "&serverTimezone=UTC";
+            + "&serverTimezone=UTC"
+            + "&useUnicode=true"
+            + "&characterEncoding=UTF-8";
 
     private static final Logger LOG = Logger.getLogger(ConexionBD.class.getName());
 
