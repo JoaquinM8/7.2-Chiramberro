@@ -1,8 +1,7 @@
-package ar.edu.finanzas;
-
-import ar.edu.finanzas.conexion.ConexionBD;
-import ar.edu.finanzas.dao.MovimientoDAO;
-import ar.edu.finanzas.modelo.Movimiento;
+import conexion.ConexionBD;
+import dao.MovimientoDAO;
+import modelo.Movimiento;
+import modelo.ResumenTotales;
 
 import java.math.BigDecimal;
 import java.sql.Connection;
@@ -14,7 +13,7 @@ import java.util.List;
  * Prueba 1: verifica la conexion JDBC y lista todos los movimientos.
  *
  * Uso:
- *   java -cp "bin;lib/mysql-connector-j-*.jar" ar.edu.finanzas.PruebaJDBC
+ *   java -cp "bin;lib/mysql-connector-j-*.jar" PruebaJDBC
  */
 public class PruebaJDBC {
 
@@ -51,6 +50,9 @@ public class PruebaJDBC {
             System.out.println();
             imprimirTabla(movimientos);
 
+            System.out.println();
+            imprimirTotales(dao.obtenerTotales());
+
             if (!movimientos.isEmpty()) {
                 System.out.println();
                 System.out.println("Primer registro (el mas reciente):");
@@ -75,6 +77,24 @@ public class PruebaJDBC {
             }
         }
         return total;
+    }
+
+    /** Imprime los totales que calculo MySQL con SUM + CASE. */
+    static void imprimirTotales(ResumenTotales totales) {
+        System.out.println("---------------------------------------------------------");
+        System.out.println(" TOTALES CALCULADOS EN MYSQL (SUM + CASE)");
+        System.out.println("---------------------------------------------------------");
+        System.out.printf("  Ingresos: %14s  (%d movimientos)%n",
+                totales.getTotalIngresos().toPlainString(),
+                totales.getCantidadIngresos());
+        System.out.printf("  Gastos  : %14s  (%d movimientos)%n",
+                totales.getTotalGastos().toPlainString(),
+                totales.getCantidadGastos());
+        System.out.println("  ------------------------------------------------");
+        System.out.printf("  Balance : %14s  (%d movimientos en total)%n",
+                totales.getBalance().toPlainString(),
+                totales.getCantidadTotal());
+        System.out.println("---------------------------------------------------------");
     }
 
     /** Imprime una tabla legible por consola. */

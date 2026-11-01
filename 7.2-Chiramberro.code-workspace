@@ -1,0 +1,15 @@
+{
+    "folders": [
+        {
+            "name": "finanzas_personales",
+            "path": "finanzas_personales"
+        },
+        {
+            "name": "gestion_alumnos",
+            "path": "gestion_alumnos"
+        }
+    ],
+    "settings": {
+        "java.import.maven.enabled": false
+    }
+}

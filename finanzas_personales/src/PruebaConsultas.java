@@ -1,7 +1,5 @@
-package ar.edu.finanzas;
-
-import ar.edu.finanzas.dao.MovimientoDAO;
-import ar.edu.finanzas.modelo.Movimiento;
+import dao.MovimientoDAO;
+import modelo.Movimiento;
 
 import java.math.BigDecimal;
 import java.sql.SQLException;
@@ -12,7 +10,7 @@ import java.util.List;
  * Prueba 3: ejercita las consultas con filtros del DAO.
  *
  * Uso:
- *   java -cp "bin;lib/mysql-connector-j-*.jar" ar.edu.finanzas.PruebaConsultas
+ *   java -cp "bin;lib/mysql-connector-j-*.jar" PruebaConsultas
  */
 public class PruebaConsultas {
 
@@ -30,15 +28,25 @@ public class PruebaConsultas {
                     dao.listarPorTipo("gasto"));
 
             // 2) buscarPorFecha: marzo 2026, extremos incluidos.
-            mostrar("2) Movimientos entre 2026-03-01 y 2026-03-31",
+            mostrar("2) Movimientos entre 2026-03-01 y 2026-03-31 (ambos inclusive)",
                     dao.buscarPorFecha(LocalDate.of(2026, 3, 1),
                             LocalDate.of(2026, 3, 31)));
+
+            // 2.b) buscarPorFechaExclusiva: desde inclusive, hasta exclusivo.
+            mostrar("2.b) Movimientos desde 2026-03-01 (inclusive) hasta 2026-04-01 (exclusivo)",
+                    dao.buscarPorFechaExclusiva(LocalDate.of(2026, 3, 1),
+                            LocalDate.of(2026, 4, 1)));
 
             // 3) listarGastosMayoresA: importe estrictamente mayor a 100.000.
             mostrar("3) Gastos mayores a 100000.00",
                     dao.listarGastosMayoresA(new BigDecimal("100000.00")));
 
-            // 4) Validacion de rangos invertidos.
+            // 4) Totales calculados en MySQL con SUM + CASE.
+            System.out.println();
+            System.out.println("=== 4) Totales generales (SUM + CASE) ===");
+            PruebaJDBC.imprimirTotales(dao.obtenerTotales());
+
+            // 5) Validacion de rangos invertidos y tipos invalidos.
             System.out.println();
             System.out.println("---------------------------------------------------------");
             System.out.println(" VALIDACIONES DE PARAMETROS");

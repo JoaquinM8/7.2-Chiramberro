@@ -1,7 +1,8 @@
-package ar.edu.finanzas.dao;
+package dao;
 
-import ar.edu.finanzas.conexion.ConexionBD;
-import ar.edu.finanzas.modelo.Movimiento;
+import conexion.ConexionBD;
+import modelo.Movimiento;
+import modelo.ResumenTotales;
 
 import java.math.BigDecimal;
 import java.sql.Connection;
@@ -90,8 +91,8 @@ public class MovimientoDAO {
     }
 
     /**
-     * Busca movimientos con fecha dentro del rango indicado, extremos
-     * incluidos (BETWEEN es inclusivo). Se ordena cronologicamente.
+     * Busca movimientos con fecha dentro del rango indicado, con ambos
+     * extremos incluidos (BETWEEN es inclusivo). Se ordena cronologicamente.
      *
      * @param desde fecha inicial (no nula).
      * @param hasta fecha final (no nula y mayor o igual a {@code desde}).
@@ -101,14 +102,7 @@ public class MovimientoDAO {
      * @throws SQLException              si falla la base.
      */
     public List<Movimiento> buscarPorFecha(LocalDate desde, LocalDate hasta) throws SQLException {
-        if (desde == null || hasta == null) {
-            throw new IllegalArgumentException("Las fechas 'desde' y 'hasta' son obligatorias.");
-        }
-        if (desde.isAfter(hasta)) {
-            throw new IllegalArgumentException(
-                    "El rango esta invertido: 'desde' (" + desde
-                    + ") no puede ser posterior a 'hasta' (" + hasta + ").");
-        }
+        validarRango(desde, hasta);
 
         String sql = SELECT_BASE
                    + " WHERE fecha BETWEEN ? AND ? "
@@ -118,6 +112,47 @@ public class MovimientoDAO {
             ps.setDate(1, Date.valueOf(desde));
             ps.setDate(2, Date.valueOf(hasta));
         });
+    }
+
+    /**
+     * Variante con rango semAbierto: {@code desde} inclusive y {@code hasta}
+     * exclusivo ({@code fecha >= desde AND fecha < hasta}).
+     *
+     * Es la forma recomendada cuando la columna incluyera hora, porque evita
+     * perder los registros del ultimo dia. Para consultar todo marzo 2026 se
+     * pasa {@code desde = 2026-03-01} y {@code hasta = 2026-04-01}.
+     *
+     * @param desde fecha inicial incluida (no nula).
+     * @param hasta fecha final excluida (no nula y no anterior a {@code desde}).
+     * @return movimientos del rango; vacia si no hay coincidencias.
+     * @throws IllegalArgumentException si alguna fecha es nula o el rango
+     *                                  esta invertido.
+     * @throws SQLException              si falla la base.
+     */
+    public List<Movimiento> buscarPorFechaExclusiva(LocalDate desde, LocalDate hasta)
+            throws SQLException {
+        validarRango(desde, hasta);
+
+        String sql = SELECT_BASE
+                   + " WHERE fecha >= ? AND fecha < ? "
+                   + " ORDER BY fecha ASC, id_movimiento ASC";
+
+        return consultar(sql, ps -> {
+            ps.setDate(1, Date.valueOf(desde));
+            ps.setDate(2, Date.valueOf(hasta));
+        });
+    }
+
+    /** Valida que el rango de fechas no sea nulo ni este invertido. */
+    private void validarRango(LocalDate desde, LocalDate hasta) {
+        if (desde == null || hasta == null) {
+            throw new IllegalArgumentException("Las fechas 'desde' y 'hasta' son obligatorias.");
+        }
+        if (desde.isAfter(hasta)) {
+            throw new IllegalArgumentException(
+                    "El rango esta invertido: 'desde' (" + desde
+                    + ") no puede ser posterior a 'hasta' (" + hasta + ").");
+        }
     }
 
     /**
@@ -140,6 +175,40 @@ public class MovimientoDAO {
                    + " ORDER BY importe DESC, fecha DESC";
 
         return consultar(sql, ps -> ps.setBigDecimal(1, importeMinimo));
+    }
+
+    /**
+     * Calcula en MySQL los totales de ingresos y gastos con
+     * {@code SUM(CASE WHEN ...)}.
+     *
+     * Se hace en la base y no en Java para que el motor recorra las filas una
+     * sola vez y no haya que traer todos los movimientos al cliente.
+     *
+     * @return resumen con cantidades, totales y balance.
+     * @throws SQLException si falla la base.
+     */
+    public ResumenTotales obtenerTotales() throws SQLException {
+        String sql =
+                "SELECT "
+              + "  COALESCE(SUM(CASE WHEN tipo = 'INGRESO' THEN importe ELSE 0 END), 0) AS total_ingresos, "
+              + "  COALESCE(SUM(CASE WHEN tipo = 'GASTO'   THEN importe ELSE 0 END), 0) AS total_gastos, "
+              + "  COALESCE(SUM(CASE WHEN tipo = 'INGRESO' THEN 1 ELSE 0 END), 0)       AS cantidad_ingresos, "
+              + "  COALESCE(SUM(CASE WHEN tipo = 'GASTO'   THEN 1 ELSE 0 END), 0)       AS cantidad_gastos "
+              + "FROM movimientos";
+
+        try (Connection cx = ConexionBD.conectar();
+             PreparedStatement ps = cx.prepareStatement(sql);
+             ResultSet rs = ps.executeQuery()) {
+
+            if (rs.next()) {
+                return new ResumenTotales(
+                        rs.getLong("cantidad_ingresos"),
+                        rs.getLong("cantidad_gastos"),
+                        rs.getBigDecimal("total_ingresos"),
+                        rs.getBigDecimal("total_gastos"));
+            }
+        }
+        return new ResumenTotales(0, 0, BigDecimal.ZERO, BigDecimal.ZERO);
     }
 
     /* =============================================================
