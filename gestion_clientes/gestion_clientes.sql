@@ -11,6 +11,11 @@ SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
 START TRANSACTION;
 SET time_zone = "+00:00";
 
+CREATE DATABASE IF NOT EXISTS `gestion_clientes`
+  DEFAULT CHARACTER SET utf8mb4
+  COLLATE utf8mb4_unicode_ci;
+USE `gestion_clientes`;
+
 
 /*!40101 SET @OLD_CHARACTER_SET_CLIENT=@@CHARACTER_SET_CLIENT */;
 /*!40101 SET @OLD_CHARACTER_SET_RESULTS=@@CHARACTER_SET_RESULTS */;
@@ -51,6 +56,31 @@ INSERT INTO `clientes` (`id`, `nombre`, `email`, `telefono`, `ciudad`, `fecha_al
 (8, 'Nicolás Herrera', 'nicolas.herrera@correo.com', '11-7012-4455', 'Salta', '2025-10-05'),
 (9, 'Brenda Sosa', 'brenda.sosa@correo.com', '11-4688-1234', 'Tucumán', '2025-11-18'),
 (10, 'Agustín Núñez', 'agustin.nunez@correo.com', '11-9223-5566', 'Neuquén', '2025-12-01');
+
+-- --------------------------------------------------------
+
+--
+-- Estructura de tabla para la tabla `usuarios`
+--
+
+CREATE TABLE `usuarios` (
+  `id` int(11) NOT NULL,
+  `usuario` varchar(50) NOT NULL,
+  `password` varchar(255) NOT NULL,
+  `nombre` varchar(100) NOT NULL,
+  `activo` tinyint(1) DEFAULT 1,
+  `rol` enum('admin','consulta') NOT NULL DEFAULT 'consulta'
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+--
+-- Usuarios de prueba. Las contrasenas se guardan como hash, nunca en texto plano.
+-- admin    / Admin2026!
+-- consulta / Consulta2026!
+--
+
+INSERT INTO `usuarios` (`id`, `usuario`, `password`, `nombre`, `activo`, `rol`) VALUES
+(1, 'admin', '$2y$10$mDoawv7cJc4DvGYgJEybouaHD8kVjC/dC97vAJFwtT7eflQ5lpGhO', 'Administrador', 1, 'admin'),
+(2, 'consulta', '$2y$10$GNc3oaFWEPN40.//8ACOSOjrKJ2wNl2cW68d1kU/zmrY/i9U0DjnC', 'Usuario de consulta', 1, 'consulta');
 
 -- --------------------------------------------------------
 
@@ -105,6 +135,13 @@ ALTER TABLE `pedidos`
   ADD KEY `fk_pedido_cliente` (`cliente_id`);
 
 --
+-- Indices de la tabla `usuarios`
+--
+ALTER TABLE `usuarios`
+  ADD PRIMARY KEY (`id`),
+  ADD UNIQUE KEY `usuario` (`usuario`);
+
+--
 -- AUTO_INCREMENT de las tablas volcadas
 --
 
@@ -119,6 +156,12 @@ ALTER TABLE `clientes`
 --
 ALTER TABLE `pedidos`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=16;
+
+--
+-- AUTO_INCREMENT de la tabla `usuarios`
+--
+ALTER TABLE `usuarios`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
 
 --
 -- Restricciones para tablas volcadas

@@ -50,7 +50,7 @@ function paginacion_html(
     $enlace = static function (int $pag, string $texto, bool $actual = false)
         use ($archivo, $filtros): string {
         if ($actual) {
-            return '<span class="pagina-actual">' . e($texto) . '</span>';
+            return '<span class="pagina-actual" aria-current="page">' . e($texto) . '</span>';
         }
         return '<a href="' . e(url_pagina($archivo, $filtros, $pag)) . '">'
              . e($texto) . '</a>';
