@@ -1,7 +1,9 @@
 {
     "java.import.maven.enabled": false,
     "java.project.sourcePaths": [
-        "finanzas_personales/src"
+        "gestion_alumnos/src",
+        "finanzas_personales/src",
+        "finanzas_personales/entregas/entrega3/codigo/src"
     ],
     "java.project.outputPath": "finanzas_personales/bin",
     "java.project.referencedLibraries": [
