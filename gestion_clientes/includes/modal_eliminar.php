@@ -32,7 +32,9 @@ $eliminarDescripcion = $eliminarDescripcion ?? 'este registro';
                 ¿Está seguro de que desea eliminar
                 <strong data-modal-detalle><?= e($eliminarDescripcion) ?></strong>?
                 <p class="text-secondary small mb-0 mt-2">
-                    Esta acción no se puede deshacer.
+                    Esta acción no se puede deshacer. Si el cliente tiene pedidos
+                    asociados, la operación se rechazará para conservar la
+                    integridad referencial.
                 </p>
             </div>
             <div class="modal-footer border-0 pt-0">

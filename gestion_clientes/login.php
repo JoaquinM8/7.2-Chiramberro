@@ -29,9 +29,9 @@ require_once __DIR__ . '/includes/header.php';
                     <div class="card-body p-4 p-md-5">
                         <div class="text-center mb-4">
                             <div class="login-brand mx-auto mb-3" aria-hidden="true">
-                                <i class="bi bi-people-fill"></i>
+                                <i class="bi bi-shop"></i>
                             </div>
-                            <h1 class="h3 fw-bold mb-1">Gestión de Clientes</h1>
+                            <h1 class="h3 fw-bold mb-1">Sistema de Gestión Comercial</h1>
                             <p class="text-secondary mb-0">Acceso al sistema</p>
                         </div>
 
@@ -57,6 +57,16 @@ require_once __DIR__ . '/includes/header.php';
                                 <i class="bi bi-check-circle-fill mt-1"
                                    aria-hidden="true"></i>
                                 <span>La sesión se cerró correctamente.</span>
+                            </div>
+                        <?php elseif ($aviso === 'expirada'): ?>
+                            <div class="alert alert-warning d-flex align-items-start gap-2"
+                                 role="alert">
+                                <i class="bi bi-shield-exclamation mt-1"
+                                   aria-hidden="true"></i>
+                                <span>
+                                    La sesión expiró o la cuenta fue desactivada.
+                                    Vuelva a iniciar sesión.
+                                </span>
                             </div>
                         <?php endif; ?>
 
@@ -117,7 +127,7 @@ require_once __DIR__ . '/includes/header.php';
                 </div>
 
                 <p class="text-center text-secondary small mt-3 mb-0">
-                    Gestión de Clientes · PHP + MySQL
+                    Sistema de Gestión Comercial · PHP + MySQL
                 </p>
             </div>
         </div>

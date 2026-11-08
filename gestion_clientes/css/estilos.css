@@ -266,7 +266,7 @@ main.contenedor {
 }
 
 .indicador-valor {
-    font-size: clamp(1.7rem, 2vw, 2.25rem);
+    font-size: clamp(1.4rem, 1.7vw, 2rem);
     font-weight: 700;
     line-height: 1.15;
     white-space: nowrap;
@@ -647,9 +647,12 @@ td.numero {
     color: var(--gc-primary);
 }
 
-.pagination .active > .page-link {
+.pagination .active > .page-link,
+.pagination .active > .page-link:hover,
+.pagination .active > .page-link:focus {
     background-color: var(--gc-primary);
     border-color: var(--gc-primary);
+    color: #ffffff;
 }
 
 /* ---------- Mensajes ---------- */
@@ -723,6 +726,28 @@ td.numero {
     color: var(--gc-muted);
     font-size: 0.875rem;
     padding: 1rem 0 1.5rem;
+}
+
+/* ---------- Buscador asincrónico (Semana 7) ---------- */
+.buscador-estado {
+    min-height: 1.5rem;
+}
+
+.buscador-tabla > :not(caption) > * > * {
+    padding: 0.95rem 1.2rem;
+}
+
+.buscador-tabla tbody td {
+    font-size: 0.95rem;
+}
+
+.buscador-tabla tbody tr:last-child > * {
+    border-bottom: 0;
+}
+
+.buscador-tabla .buscador-id {
+    color: var(--gc-muted);
+    font-variant-numeric: tabular-nums;
 }
 
 /* ---------- Responsive ---------- */

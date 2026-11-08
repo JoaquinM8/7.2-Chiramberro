@@ -12,10 +12,9 @@ declare(strict_types=1);
 
 $base = $base ?? '';
 $activa = $activa ?? '';
-$rol = (string) ($_SESSION['rol'] ?? 'consulta');
+$rol = (string) ($_SESSION['rol'] ?? 'operador');
 $nombreUsuario = (string) ($_SESSION['nombre'] ?? $_SESSION['usuario'] ?? 'Usuario');
 $esAdmin = esAdmin();
-$esConsulta = esConsulta();
 
 $claseActiva = static function (string $clave) use ($activa): string {
     return $activa === $clave ? ' active' : '';
@@ -29,9 +28,9 @@ $ariaActual = static function (string $clave) use ($activa): string {
         <a class="navbar-brand fw-semibold d-flex align-items-center gap-2"
            href="<?= e($base) ?>panel.php">
             <span class="brand-mark" aria-hidden="true">
-                <i class="bi bi-people-fill"></i>
+                <i class="bi bi-shop"></i>
             </span>
-            <span>Gestión de Clientes</span>
+            <span>Sistema de Gestión Comercial</span>
         </a>
 
         <button class="navbar-toggler" type="button"
@@ -71,20 +70,31 @@ $ariaActual = static function (string $clave) use ($activa): string {
                         Reportes
                     </a>
                 </li>
+                <?php if ($esAdmin): ?>
+                    <li class="nav-item">
+                        <a class="nav-link<?= $claseActiva('usuarios') ?>"
+                           href="<?= e($base) ?>usuarios/listar.php"<?= $ariaActual('usuarios') ?>>
+                            <i class="bi bi-person-gear me-1" aria-hidden="true"></i>
+                            Usuarios
+                        </a>
+                    </li>
+                <?php endif; ?>
             </ul>
 
             <form class="d-flex my-2 my-lg-0 me-lg-3" role="search"
-                  method="GET" action="<?= e($base) ?>clientes/listar.php">
-                <label for="buscarGlobal" class="visually-hidden">Buscar cliente</label>
+                  method="GET" action="<?= e($base) ?>clientes/buscar.php">
+                <label for="buscarGlobal" class="visually-hidden">
+                    Buscar cliente o ciudad
+                </label>
                 <div class="input-group input-group-sm">
                     <span class="input-group-text bg-white border-0" aria-hidden="true">
                         <i class="bi bi-search text-primary"></i>
                     </span>
-                    <input id="buscarGlobal" name="buscar" type="search"
+                    <input id="buscarGlobal" name="q" type="search"
                            class="form-control border-0"
-                           placeholder="Buscar cliente..."
-                           aria-label="Buscar cliente por nombre"
-                           maxlength="100">
+                           placeholder="Buscar cliente o ciudad..."
+                           aria-label="Buscar cliente por nombre o ciudad"
+                           autocomplete="off" maxlength="80">
                     <button class="btn btn-light text-primary" type="submit"
                             aria-label="Buscar">
                         <i class="bi bi-arrow-right" aria-hidden="true"></i>
@@ -99,19 +109,18 @@ $ariaActual = static function (string $clave) use ($activa): string {
                     <span class="d-flex flex-column lh-sm">
                         <span class="fw-semibold"><?= e($nombreUsuario) ?></span>
                         <span class="badge rounded-pill text-bg-light align-self-start mt-1">
-                            <?= e($rol) ?>
+                            <?= e(etiqueta_rol($rol)) ?>
                         </span>
                     </span>
                 </span>
 
-                <?php if ($esConsulta): ?>
-                    <a href="<?= e($base) ?>reportes/index.php"
-                       class="btn btn-sm btn-outline-light"
-                       data-bs-toggle="tooltip" data-bs-placement="bottom"
-                       title="Rol de solo lectura: no puede crear, editar ni eliminar">
-                        <i class="bi bi-eye me-1" aria-hidden="true"></i>
-                        Solo lectura
-                    </a>
+                <?php if ($rol === 'operador'): ?>
+                    <span class="badge rounded-pill text-bg-light text-primary"
+                          data-bs-toggle="tooltip" data-bs-placement="bottom"
+                          title="Puede gestionar clientes y pedidos; no administra usuarios ni elimina clientes">
+                        <i class="bi bi-person-workspace me-1" aria-hidden="true"></i>
+                        Operador
+                    </span>
                 <?php endif; ?>
 
                 <form method="POST" action="<?= e($base) ?>logout.php" class="d-inline">

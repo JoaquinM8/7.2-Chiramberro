@@ -154,12 +154,18 @@ require_once __DIR__ . '/../includes/breadcrumbs.php';
                 Consulte, busque y administre los clientes registrados.
             </p>
         </div>
-        <?php if (esAdmin()): ?>
-            <a href="nuevo.php" class="btn btn-primary align-self-start">
-                <i class="bi bi-person-plus me-1" aria-hidden="true"></i>
-                Nuevo cliente
+        <div class="d-flex flex-wrap gap-2 align-self-start">
+            <a href="buscar.php" class="btn btn-outline-primary">
+                <i class="bi bi-lightning-charge me-1" aria-hidden="true"></i>
+                Buscador asincrónico
             </a>
-        <?php endif; ?>
+            <?php if (puedeGestionarComercial()): ?>
+                <a href="nuevo.php" class="btn btn-primary">
+                    <i class="bi bi-person-plus me-1" aria-hidden="true"></i>
+                    Nuevo cliente
+                </a>
+            <?php endif; ?>
+        </div>
     </div>
 
     <?php renderizar_flash(); ?>
@@ -279,13 +285,15 @@ require_once __DIR__ . '/../includes/breadcrumbs.php';
                                         <i class="bi bi-eye" aria-hidden="true"></i>
                                         <span class="d-none d-lg-inline">Ver</span>
                                     </a>
-                                    <?php if (esAdmin()): ?>
+                                    <?php if (puedeGestionarComercial()): ?>
                                         <a href="editar.php?id=<?= (int) $cliente['id'] ?>"
                                            class="btn btn-sm btn-outline-secondary"
                                            aria-label="Editar cliente <?= e($cliente['nombre']) ?>">
                                             <i class="bi bi-pencil" aria-hidden="true"></i>
                                             <span class="d-none d-lg-inline">Editar</span>
                                         </a>
+                                    <?php endif; ?>
+                                    <?php if (esAdmin()): ?>
                                         <button type="button"
                                                 class="btn btn-sm btn-outline-danger"
                                                 data-bs-toggle="modal"

@@ -14,14 +14,14 @@
 declare(strict_types=1);
 
 $base = $base ?? '';
-$tituloPagina = $tituloPagina ?? 'Gestión de Clientes';
+$tituloPagina = $tituloPagina ?? 'Sistema de Gestión Comercial';
 $activa = $activa ?? '';
 ?><!DOCTYPE html>
 <html lang="es">
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title><?= e($tituloPagina) ?> | Gestión de Clientes</title>
+    <title><?= e($tituloPagina) ?> | Sistema de Gestión Comercial</title>
 
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css"
           rel="stylesheet"

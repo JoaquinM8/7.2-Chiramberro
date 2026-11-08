@@ -35,6 +35,12 @@ function obtener_conexion(): PDO
         } catch (PDOException $error) {
             // El detalle tecnico va al log; el usuario recibe un mensaje generico.
             error_log('[gestion_clientes] Error de conexion a la base de datos: ' . $error->getMessage());
+
+            // La API define GESTION_API para poder responder JSON en lugar de HTML.
+            if (defined('GESTION_API')) {
+                throw $error;
+            }
+
             http_response_code(500);
             exit('No se pudo conectar con la base de datos. Contacte al administrador.');
         }

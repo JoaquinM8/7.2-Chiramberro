@@ -102,8 +102,13 @@ function csrf_campo(): string
 
 function csrf_valido(): bool
 {
-    $recibido = (string) ($_POST['csrf_token'] ?? '');
-    $esperado = (string) ($_SESSION['csrf_token'] ?? '');
+    $recibido = $_POST['csrf_token'] ?? '';
+    $esperado = $_SESSION['csrf_token'] ?? '';
+
+    // Si llega como array (csrf_token[]), no es un token válido.
+    if (!is_string($recibido) || !is_string($esperado)) {
+        return false;
+    }
 
     return $recibido !== ''
         && $esperado !== ''
@@ -124,12 +129,18 @@ function requiere_csrf(): void
    ============================================================= */
 function texto_post(string $campo): string
 {
-    return trim((string) ($_POST[$campo] ?? ''));
+    $valor = $_POST[$campo] ?? '';
+
+    // Un campo repetido como nombre[] llega como array: se ignora.
+    return is_string($valor) ? trim($valor) : '';
 }
 
 function texto_get(string $campo): string
 {
-    return trim((string) ($_GET[$campo] ?? ''));
+    $valor = $_GET[$campo] ?? '';
+
+    // Un parámetro repetido como q[] llega como array: se ignora.
+    return is_string($valor) ? trim($valor) : '';
 }
 
 function longitud_texto(string $texto): int
@@ -161,7 +172,122 @@ function registrar_error_texto(string $mensaje): void
 }
 
 /* =============================================================
-   6) CABECERA Y PIE HISTORICOS
+   6) CATALOGOS Y AYUDAS DE PRESENTACION (Semana 8)
+   ============================================================= */
+function estados_pedido(): array
+{
+    return [
+        'pendiente' => 'Pendiente',
+        'pagado' => 'Pagado',
+        'enviado' => 'Enviado',
+        'cancelado' => 'Cancelado',
+    ];
+}
+
+function estado_pedido_valido(string $estado): bool
+{
+    return array_key_exists($estado, estados_pedido());
+}
+
+function etiqueta_estado_pedido(string $estado): string
+{
+    return estados_pedido()[$estado] ?? 'Sin estado';
+}
+
+function clase_estado_pedido(string $estado): string
+{
+    return match ($estado) {
+        'pendiente' => 'text-bg-warning',
+        'pagado' => 'text-bg-success',
+        'enviado' => 'text-bg-info',
+        'cancelado' => 'text-bg-secondary',
+        default => 'text-bg-light border',
+    };
+}
+
+function etiqueta_rol(string $rol): string
+{
+    return match ($rol) {
+        'admin' => 'Administrador',
+        'operador' => 'Operador',
+        default => 'Usuario',
+    };
+}
+
+function fecha_iso_valida(string $fecha): bool
+{
+    if (!preg_match('/^\d{4}-\d{2}-\d{2}$/', $fecha)) {
+        return false;
+    }
+
+    $objeto = DateTimeImmutable::createFromFormat('!Y-m-d', $fecha);
+    $errores = DateTimeImmutable::getLastErrors();
+
+    return $objeto !== false
+        && ($errores === false || ($errores['warning_count'] === 0 && $errores['error_count'] === 0))
+        && $objeto->format('Y-m-d') === $fecha;
+}
+
+function fecha_mostrar(?string $fecha): string
+{
+    $fecha = (string) ($fecha ?? '');
+
+    if (!fecha_iso_valida($fecha)) {
+        return $fecha;
+    }
+
+    return date('d/m/Y', strtotime($fecha));
+}
+
+function importe_mostrar(float|int|string|null $importe): string
+{
+    return '$ ' . number_format((float) $importe, 2, ',', '.');
+}
+
+/**
+ * Normaliza el período de un reporte. Si faltan datos o son inválidos,
+ * usa el año en curso y devuelve los mensajes para mostrar al usuario.
+ *
+ * @return array{desde:string,hasta:string,errores:array<int,string>}
+ */
+function periodo_reportes(string $desde, string $hasta): array
+{
+    $inicioAnio = date('Y-01-01');
+    $hoy = date('Y-m-d');
+    $errores = [];
+
+    if ($desde === '') {
+        $desde = $inicioAnio;
+    }
+    if ($hasta === '') {
+        $hasta = $hoy;
+    }
+
+    if (!fecha_iso_valida($desde)) {
+        $errores[] = 'La fecha inicial no es válida. Se usó el inicio del año.';
+        $desde = $inicioAnio;
+    }
+
+    if (!fecha_iso_valida($hasta)) {
+        $errores[] = 'La fecha final no es válida. Se usó la fecha actual.';
+        $hasta = $hoy;
+    }
+
+    if ($desde > $hasta) {
+        $errores[] = 'La fecha inicial no puede ser posterior a la final.';
+        $desde = $inicioAnio;
+        $hasta = $hoy;
+    }
+
+    return [
+        'desde' => $desde,
+        'hasta' => $hasta,
+        'errores' => $errores,
+    ];
+}
+
+/* =============================================================
+   7) CABECERA Y PIE HISTORICOS
    Se conservan para reportes.php y reporte_pedidos.php.
    Las pantallas nuevas usan includes/header.php + menu.php + footer.php.
    ============================================================= */
@@ -174,13 +300,13 @@ function cabecera(string $titulo, string $activa = ''): void
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title><?= e($titulo) ?> | Gestion de Clientes</title>
+    <title><?= e($titulo) ?> | Sistema de Gestión Comercial</title>
     <link rel="stylesheet" href="css/estilos.css">
 </head>
 <body>
 
 <header class="cabecera">
-    <h1>Gestion de Clientes</h1>
+    <h1>Sistema de Gestión Comercial</h1>
     <nav class="menu">
         <a href="panel.php"            class="<?= $activa === 'menu'    ? 'activo' : '' ?>">Inicio</a>
         <a href="clientes/listar.php"  class="<?= $activa === 'listado' ? 'activo' : '' ?>">Listar Clientes</a>

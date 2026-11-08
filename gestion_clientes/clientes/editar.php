@@ -9,7 +9,7 @@ declare(strict_types=1);
 require_once __DIR__ . '/../config/conexion.php';
 require_once __DIR__ . '/../includes/auth.php';
 require_once __DIR__ . '/../includes/funciones.php';
-requiereRol('admin');
+requiereRol(['admin', 'operador']);
 
 $id = filter_input(INPUT_GET, 'id', FILTER_VALIDATE_INT);
 $id = ($id !== false && $id !== null && $id > 0) ? (int) $id : 0;

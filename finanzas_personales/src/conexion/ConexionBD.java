@@ -27,7 +27,8 @@ public final class ConexionBD {
      * serverTimezone=UTC mantiene las fechas estables al viajar por JDBC.
      */
     private static final String URL =
-            "jdbc:mysql://localhost:3306/finanzas_personales?useSSL=false&serverTimezone=UTC";
+            "jdbc:mysql://localhost:3306/finanzas_personales"
+          + "?useSSL=false&serverTimezone=UTC&useUnicode=true&characterEncoding=UTF-8";
 
     private static final Logger LOG = Logger.getLogger(ConexionBD.class.getName());
 

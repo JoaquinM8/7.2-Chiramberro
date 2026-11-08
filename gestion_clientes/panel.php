@@ -11,6 +11,8 @@ require_once __DIR__ . '/includes/auth.php';
 require_once __DIR__ . '/includes/funciones.php';
 requiereLogin();
 
+$esAdmin = esAdmin();
+
 try {
     $totalClientes = (int) $pdo->query('SELECT COUNT(*) FROM clientes')->fetchColumn();
 
@@ -22,7 +24,7 @@ try {
     )->fetch() ?: ['cantidad' => 0, 'total' => 0, 'promedio' => 0];
 
     $ultimosPedidos = $pdo->query(
-        'SELECT p.id, p.fecha_pedido, p.descripcion, p.importe,
+        'SELECT p.id, p.fecha_pedido, p.descripcion, p.importe, p.estado,
                 c.id AS cliente_id, c.nombre AS cliente
          FROM pedidos p
          INNER JOIN clientes c ON c.id = p.cliente_id
@@ -64,10 +66,14 @@ require_once __DIR__ . '/includes/menu.php';
                 <i class="bi bi-check-circle me-1" aria-hidden="true"></i>
                 Sistema operativo
             </span>
-            <?php if (esAdmin()): ?>
-                <a href="clientes/nuevo.php" class="btn btn-primary">
+            <?php if (puedeGestionarComercial()): ?>
+                <a href="clientes/nuevo.php" class="btn btn-outline-primary">
                     <i class="bi bi-person-plus me-1" aria-hidden="true"></i>
                     Nuevo cliente
+                </a>
+                <a href="pedidos/nuevo.php" class="btn btn-primary">
+                    <i class="bi bi-cart-plus me-1" aria-hidden="true"></i>
+                    Nuevo pedido
                 </a>
             <?php endif; ?>
         </div>
@@ -91,7 +97,7 @@ require_once __DIR__ . '/includes/menu.php';
             </div>
         </div>
 
-        <div class="col-12 col-md-6 col-lg-3">
+        <div class="col-12 col-md-6 col-lg-2">
             <div class="card dashboard-stat dashboard-stat-pedidos border-0 shadow-sm h-100">
                 <div class="card-body">
                     <div class="d-flex justify-content-between align-items-start gap-3">
@@ -108,11 +114,11 @@ require_once __DIR__ . '/includes/menu.php';
             </div>
         </div>
 
-        <div class="col-12 col-md-6 col-lg-3">
+        <div class="col-12 col-md-6 col-lg-4">
             <div class="card dashboard-stat dashboard-stat-ventas border-0 shadow-sm h-100">
                 <div class="card-body">
                     <div class="d-flex justify-content-between align-items-start gap-3">
-                        <p class="dashboard-stat-label">Ventas</p>
+                        <p class="dashboard-stat-label">Total vendido</p>
                         <span class="dashboard-icon dashboard-icon-ventas" aria-hidden="true">
                             <i class="bi bi-currency-dollar"></i>
                         </span>
@@ -164,13 +170,14 @@ require_once __DIR__ . '/includes/menu.php';
                                 <th scope="col">N.º</th>
                                 <th scope="col">Cliente</th>
                                 <th scope="col">Fecha</th>
+                                <th scope="col">Estado</th>
                                 <th scope="col" class="text-end">Importe</th>
                             </tr>
                         </thead>
                         <tbody>
                             <?php if (!$ultimosPedidos): ?>
                                 <tr>
-                                    <td colspan="4"
+                                    <td colspan="5"
                                         class="text-center text-secondary py-4">
                                         No hay pedidos registrados.
                                     </td>
@@ -178,16 +185,26 @@ require_once __DIR__ . '/includes/menu.php';
                             <?php else: ?>
                                 <?php foreach ($ultimosPedidos as $pedido): ?>
                                     <tr>
-                                        <td><?= (int) $pedido['id'] ?></td>
+                                        <td>
+                                            <a href="pedidos/detalle.php?id=<?= (int) $pedido['id'] ?>"
+                                               class="text-decoration-none fw-medium">
+                                                <?= (int) $pedido['id'] ?>
+                                            </a>
+                                        </td>
                                         <td>
                                             <a href="clientes/ver.php?id=<?= (int) $pedido['cliente_id'] ?>"
                                                class="text-decoration-none fw-medium">
                                                 <?= e($pedido['cliente']) ?>
                                             </a>
                                         </td>
-                                        <td><?= e(date('d/m/Y', strtotime((string) $pedido['fecha_pedido']))) ?></td>
+                                        <td><?= e(fecha_mostrar($pedido['fecha_pedido'])) ?></td>
+                                        <td>
+                                            <span class="badge <?= e(clase_estado_pedido((string) $pedido['estado'])) ?>">
+                                                <?= e(etiqueta_estado_pedido((string) $pedido['estado'])) ?>
+                                            </span>
+                                        </td>
                                         <td class="text-end text-nowrap dashboard-importe">
-                                            $ <?= e(number_format((float) $pedido['importe'], 2, ',', '.')) ?>
+                                            <?= e(importe_mostrar($pedido['importe'])) ?>
                                         </td>
                                     </tr>
                                 <?php endforeach; ?>
@@ -220,6 +237,19 @@ require_once __DIR__ . '/includes/menu.php';
                         </span>
                         <i class="bi bi-chevron-right" aria-hidden="true"></i>
                     </a>
+                    <a href="clientes/buscar.php"
+                       class="list-group-item list-group-item-action dashboard-action">
+                        <span class="dashboard-action-icon" aria-hidden="true">
+                            <i class="bi bi-lightning-charge"></i>
+                        </span>
+                        <span class="dashboard-action-content">
+                            <span class="dashboard-action-title">Buscador asincrónico</span>
+                            <span class="dashboard-action-text">
+                                Buscar por nombre o ciudad sin recargar
+                            </span>
+                        </span>
+                        <i class="bi bi-chevron-right" aria-hidden="true"></i>
+                    </a>
                     <a href="pedidos/listar.php"
                        class="list-group-item list-group-item-action dashboard-action">
                         <span class="dashboard-action-icon" aria-hidden="true">
@@ -228,11 +258,26 @@ require_once __DIR__ . '/includes/menu.php';
                         <span class="dashboard-action-content">
                             <span class="dashboard-action-title">Consultar pedidos</span>
                             <span class="dashboard-action-text">
-                                Revisar el historial de compras
+                                Revisar el historial, estados y detalles
                             </span>
                         </span>
                         <i class="bi bi-chevron-right" aria-hidden="true"></i>
                     </a>
+                    <?php if (puedeGestionarComercial()): ?>
+                        <a href="pedidos/nuevo.php"
+                           class="list-group-item list-group-item-action dashboard-action">
+                            <span class="dashboard-action-icon" aria-hidden="true">
+                                <i class="bi bi-cart-plus"></i>
+                            </span>
+                            <span class="dashboard-action-content">
+                                <span class="dashboard-action-title">Registrar pedido</span>
+                                <span class="dashboard-action-text">
+                                    Asociar una nueva venta a un cliente
+                                </span>
+                            </span>
+                            <i class="bi bi-chevron-right" aria-hidden="true"></i>
+                        </a>
+                    <?php endif; ?>
                     <a href="reportes/index.php"
                        class="list-group-item list-group-item-action dashboard-action">
                         <span class="dashboard-action-icon" aria-hidden="true">
@@ -241,18 +286,37 @@ require_once __DIR__ . '/includes/menu.php';
                         <span class="dashboard-action-content">
                             <span class="dashboard-action-title">Ver reportes</span>
                             <span class="dashboard-action-text">
-                                Estadísticas y reportes del sistema
+                                Ventas, clientes y pedidos por período
                             </span>
                         </span>
                         <i class="bi bi-chevron-right" aria-hidden="true"></i>
                     </a>
+                    <?php if ($esAdmin): ?>
+                        <a href="usuarios/listar.php"
+                           class="list-group-item list-group-item-action dashboard-action">
+                            <span class="dashboard-action-icon" aria-hidden="true">
+                                <i class="bi bi-person-gear"></i>
+                            </span>
+                            <span class="dashboard-action-content">
+                                <span class="dashboard-action-title">Administrar usuarios</span>
+                                <span class="dashboard-action-text">
+                                    Altas, roles y desactivación de cuentas
+                                </span>
+                            </span>
+                            <i class="bi bi-chevron-right" aria-hidden="true"></i>
+                        </a>
+                    <?php endif; ?>
                 </div>
-                <?php if (!esAdmin()): ?>
-                    <div class="card-footer bg-white text-secondary small">
-                        <i class="bi bi-info-circle me-1" aria-hidden="true"></i>
-                        Rol de consulta: solo lectura. No puede crear, editar ni eliminar.
-                    </div>
-                <?php endif; ?>
+                <div class="card-footer bg-white text-secondary small">
+                    <i class="bi bi-shield-check me-1" aria-hidden="true"></i>
+                    <?php if ($esAdmin): ?>
+                        Rol administrador: gestión comercial completa y
+                        administración de usuarios.
+                    <?php else: ?>
+                        Rol operador: puede gestionar clientes y pedidos; no
+                        administra usuarios ni elimina clientes.
+                    <?php endif; ?>
+                </div>
             </div>
         </div>
     </div>

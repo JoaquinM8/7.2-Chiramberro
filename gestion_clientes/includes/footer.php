@@ -13,7 +13,7 @@ declare(strict_types=1);
                     align-items-center gap-2 small text-secondary">
             <span>
                 <i class="bi bi-code-slash me-1" aria-hidden="true"></i>
-                Gestión de Clientes · PHP + MySQL
+                Sistema de Gestión Comercial · PHP + MySQL
             </span>
             <span>Trabajo práctico sobre XAMPP</span>
         </div>

@@ -36,6 +36,18 @@ try {
     );
     $stmtPedidos->execute([':id' => $id]);
     $resumen = $stmtPedidos->fetch() ?: ['cantidad' => 0, 'total' => 0];
+
+    $stmtListaPedidos = $pdo->prepare(
+        'SELECT p.id, p.fecha_pedido, p.descripcion, p.importe, p.estado,
+                u.nombre AS usuario
+         FROM pedidos p
+         LEFT JOIN usuarios u ON u.id = p.usuario_id
+         WHERE p.cliente_id = :id
+         ORDER BY p.fecha_pedido DESC, p.id DESC
+         LIMIT 20'
+    );
+    $stmtListaPedidos->execute([':id' => $id]);
+    $pedidosCliente = $stmtListaPedidos->fetchAll();
 } catch (PDOException $error) {
     registrar_error($error, 'clientes/ver');
     http_response_code(500);
@@ -73,13 +85,20 @@ require_once __DIR__ . '/../includes/breadcrumbs.php';
                 Cliente #<?= (int) $cliente['id'] ?>
             </p>
         </div>
-        <?php if (esAdmin()): ?>
-            <div class="d-flex gap-2 align-self-start">
+        <div class="d-flex flex-wrap gap-2 align-self-start">
+            <?php if (puedeGestionarComercial()): ?>
+                <a href="../pedidos/nuevo.php?cliente_id=<?= (int) $cliente['id'] ?>"
+                   class="btn btn-primary">
+                    <i class="bi bi-cart-plus me-1" aria-hidden="true"></i>
+                    Nuevo pedido
+                </a>
                 <a href="editar.php?id=<?= (int) $cliente['id'] ?>"
                    class="btn btn-outline-secondary">
                     <i class="bi bi-pencil me-1" aria-hidden="true"></i>
                     Editar
                 </a>
+            <?php endif; ?>
+            <?php if (esAdmin()): ?>
                 <button type="button"
                         class="btn btn-outline-danger"
                         data-bs-toggle="modal"
@@ -90,8 +109,8 @@ require_once __DIR__ . '/../includes/breadcrumbs.php';
                     <i class="bi bi-trash me-1" aria-hidden="true"></i>
                     Eliminar
                 </button>
-            </div>
-        <?php endif; ?>
+            <?php endif; ?>
+        </div>
     </div>
 
     <?php renderizar_flash(); ?>
@@ -110,7 +129,7 @@ require_once __DIR__ . '/../includes/breadcrumbs.php';
                 <div class="card-body">
                     <p class="text-secondary mb-1">Total comprado</p>
                     <p class="indicador-valor mb-0 text-primary">
-                        $ <?= e(number_format((float) $resumen['total'], 2, ',', '.')) ?>
+                        <?= e(importe_mostrar($resumen['total'])) ?>
                     </p>
                 </div>
             </div>
@@ -141,8 +160,67 @@ require_once __DIR__ . '/../includes/breadcrumbs.php';
             <dd><?= e($cliente['ciudad'] ?? '') ?></dd>
 
             <dt>Fecha de alta</dt>
-            <dd><?= e($cliente['fecha_alta']) ?></dd>
+            <dd><?= e(fecha_mostrar($cliente['fecha_alta'])) ?></dd>
         </dl>
+    </div>
+
+    <div class="card border-0 shadow-sm mt-4">
+        <div class="card-header bg-white d-flex flex-column flex-sm-row
+                    justify-content-between align-items-sm-center gap-2">
+            <h3 class="h5 mb-0">
+                <i class="bi bi-cart3 me-2 text-primary" aria-hidden="true"></i>
+                Pedidos del cliente
+            </h3>
+            <a href="../pedidos/listar.php?cliente_id=<?= (int) $cliente['id'] ?>"
+               class="btn btn-sm btn-outline-primary">
+                Ver todos
+            </a>
+        </div>
+        <div class="table-responsive">
+            <table class="table table-hover align-middle mb-0">
+                <thead class="table-light">
+                    <tr>
+                        <th scope="col">N.°</th>
+                        <th scope="col">Fecha</th>
+                        <th scope="col">Descripción</th>
+                        <th scope="col">Estado</th>
+                        <th scope="col" class="text-end">Importe</th>
+                        <th scope="col" class="text-end">Acción</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <?php if (!$pedidosCliente): ?>
+                        <tr>
+                            <td colspan="6" class="text-center text-secondary py-4">
+                                El cliente todavía no tiene pedidos registrados.
+                            </td>
+                        </tr>
+                    <?php else: ?>
+                        <?php foreach ($pedidosCliente as $pedido): ?>
+                            <tr>
+                                <td><?= (int) $pedido['id'] ?></td>
+                                <td><?= e(fecha_mostrar($pedido['fecha_pedido'])) ?></td>
+                                <td><?= e($pedido['descripcion']) ?></td>
+                                <td>
+                                    <span class="badge <?= e(clase_estado_pedido((string) $pedido['estado'])) ?>">
+                                        <?= e(etiqueta_estado_pedido((string) $pedido['estado'])) ?>
+                                    </span>
+                                </td>
+                                <td class="text-end text-nowrap">
+                                    <?= e(importe_mostrar($pedido['importe'])) ?>
+                                </td>
+                                <td class="text-end">
+                                    <a href="../pedidos/detalle.php?id=<?= (int) $pedido['id'] ?>"
+                                       class="btn btn-sm btn-outline-primary">
+                                        Ver
+                                    </a>
+                                </td>
+                            </tr>
+                        <?php endforeach; ?>
+                    <?php endif; ?>
+                </tbody>
+            </table>
+        </div>
     </div>
 </main>
 

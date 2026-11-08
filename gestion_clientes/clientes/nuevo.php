@@ -6,9 +6,10 @@
 
 declare(strict_types=1);
 
+require_once __DIR__ . '/../config/conexion.php';
 require_once __DIR__ . '/../includes/auth.php';
 require_once __DIR__ . '/../includes/funciones.php';
-requiereRol('admin');
+requiereRol(['admin', 'operador']);
 
 $errores = $_SESSION['errores_alta'] ?? [];
 $datos = $_SESSION['datos_alta'] ?? [];
